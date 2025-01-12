@@ -1,0 +1,20 @@
+{
+  "name": "julian-test-import",
+  "version": "1.0.0",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+
+  "main": "index.js",
+  "type": "module",
+
+  "scripts": {
+  },
+  "peerDependencies": {
+  },
+  "devDependencies": {
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

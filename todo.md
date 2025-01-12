@@ -1,0 +1,6 @@
+- node log per debug di uno specifico nodo
+- automatizzare login gooogle account aoth2
+- server shared memory con yjs
+- server shared memory con mia libreria
+- server negoziazione webrtc
+- server stream RTC (magari!)

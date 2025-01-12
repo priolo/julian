@@ -1,0 +1,80 @@
+{
+	"name": "typexpress",
+	"version": "0.5.1",
+	"private": false,
+	"keywords": [
+		"express",
+		"typescript",
+		"typexpress"
+	],
+	"description": "Project Typexpress",
+	"author": "Iorio Ivano <iorioivano@gmail.com>",
+	"license": "MIT",
+	"homepage": "https://github.com/priolo/typexpress",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/priolo/typexpress.git"
+	},
+	"type": "module",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"build-watch": "tsc -w",
+		"test": "node --experimental-vm-modules --inspect-brk ./node_modules/jest/bin/jest.js",
+		"prepublishOnly": "npm run build",
+		"pub": "npm publish --access public"
+	},
+	"//dependencies": {
+		"@priolo/jon-utils#local": "file:C://Users//iorio//Documents//jon-utils",
+		"@priolo/jess": "file:C://Users//iorio//Documents//jess"
+	},
+	"dependencies": {
+		"@priolo/jess": "file:C://Users//iorio//Documents//jess",
+		"@priolo/jon-utils": "file://C:/Users/iorio/Documents/jon-utils",
+		"connect-typeorm": "^2.0.0",
+		"cookie-parser": "^1.4.7",
+		"cors": "^2.8.5",
+		"express": "^4.21.1",
+		"express-graphql": "~0.12.0",
+		"express-handlebars": "^8.0.1",
+		"express-session": "^1.18.1",
+		"form-data": "^4.0.1",
+		"formidable": "^3.5.2",
+		"graphql": "^15.8.0",
+		"jsonwebtoken": "^9.0.2",
+		"multer": "^1.4.5-lts.1",
+		"reflect-metadata": "^0.2.2",
+		"serve-index": "^1.9.1",
+		"slate": "^0.110.2",
+		"sqlite3": "^5.1.7",
+		"typeorm": "^0.3.20",
+		"ws": "^8.18.0"
+	},
+	"devDependencies": {
+		"@tsconfig/node22": "^22.0.0",
+		"@types/cookie-parser": "^1.4.2",
+		"@types/cors": "^2.8.10",
+		"@types/express": "^4.17.8",
+		"@types/express-graphql": "^0.9.0",
+		"@types/express-session": "^1.17.1",
+		"@types/form-data": "^2.5.0",
+		"@types/graphql": "^14.5.0",
+		"@types/jest": "^29.5.13",
+		"@types/jsonwebtoken": "^8.5.0",
+		"@types/multer": "^1.4.5",
+		"@types/node": "^22.10.1",
+		"@types/nodemailer": "^6.4.0",
+		"@types/serve-index": "^1.7.30",
+		"@types/ws": "^8.5.13",
+		"axios": "^1.7.9",
+		"cross-env": "^7.0.3",
+		"jest": "^29.7.0",
+		"julian-test-import": "file:./src/services/farm/julian-test-import",
+		"ts-jest": "^29.2.5",
+		"typescript": "^5.7.2"
+	}
+}
