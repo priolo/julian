@@ -1,26 +1,30 @@
 {
-	"name": "typexpress",
+	"author": "Iorio Ivano <iorioivano@gmail.com>",
+	"name": "@priolo/julian",
 	"version": "0.5.1",
 	"private": false,
 	"keywords": [
-		"express",
+		"nodejs",
 		"typescript",
-		"typexpress"
+		"priolo"
 	],
 	"description": "Project Typexpress",
-	"author": "Iorio Ivano <iorioivano@gmail.com>",
 	"license": "MIT",
 	"homepage": "https://github.com/priolo/typexpress",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/priolo/typexpress.git"
 	},
+
+
 	"type": "module",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"files": [
 		"dist"
 	],
+
+	
 	"scripts": {
 		"build": "tsc",
 		"build-watch": "tsc -w",
