@@ -15,7 +15,10 @@ export class LogService extends ServiceBase {
 	get stateDefault() {
 		return {
 			...super.stateDefault,
+			/** log minimo di ascolto */
 			levels: <TypeLog[]>null,
+			/** evento su ricezione di un LOG */
+			onLog: <(log: ILog) => void>null,
 		}
 	}
 
@@ -23,10 +26,12 @@ export class LogService extends ServiceBase {
 	 * Creao l'istanza del logger
 	 */
 	protected async onInitAfter(): Promise<void> {
-		super.onInitAfter()
+		await super.onInitAfter()
 		const parent = this.nodeByPath<ServiceBase>("..")
 		parent.emitter.on('$', msg => {
 			const eventLog = msg.payload as ILog
+
+			// Se non sono in ascolto su questo tipo di log non lo stampo
 			if (this.state.levels && !this.state.levels.includes(eventLog.type)) return
 			const type = {
 				[TypeLog.DEBUG]: LOG_TYPE.DEBUG,
@@ -36,6 +41,9 @@ export class LogService extends ServiceBase {
 				[TypeLog.FATAL]: LOG_TYPE.FATAL,
 			}[eventLog.type] ?? LOG_TYPE.INFO
 			log(`${eventLog.source ?? "--"} :: ${msg.event ?? "--"}`, type, eventLog.payload)
+			
+			// Se c'e' un onLog lo chiamo
+			if ( this.state.onLog) this.state.onLog(eventLog)
 		})
 	}
 }

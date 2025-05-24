@@ -6,7 +6,11 @@ import { IHttpRouter } from "../http/utils.js";
 
 
 
-export type HttpRouterServiceConf = Partial<HttpRouterService['stateDefault']> & { class: "http-router", children?: HttpRouterServiceConf[] }
+export type HttpRouterServiceConf = Partial<HttpRouterService['stateDefault']> 
+	& { 
+		class: "http-router" | (new (...args: any[]) => HttpRouterService), 
+		children?: HttpRouterServiceConf[] 
+	}
 
 /**
  * Generalmente figlio di un HttpServices

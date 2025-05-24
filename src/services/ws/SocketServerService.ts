@@ -45,7 +45,7 @@ export class SocketServerService extends SocketCommunicator {
 	private server: WebSocketServer = null
 
 	protected async onInit() {
-		super.onInit()
+		await super.onInit()
 		if (!this.state.autostart) return
 		await this.startListener()
 	}

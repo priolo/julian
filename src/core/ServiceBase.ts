@@ -68,7 +68,6 @@ export class ServiceBase extends NodeConf {
 	 */
 	async reload() {
 		try {
-			debugger
 			const filePath = this.getCurrentFilePath()
 			
 			// Re-import the module with cache busting

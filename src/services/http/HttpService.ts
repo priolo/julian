@@ -65,7 +65,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 	 * Creo l'instanza del server EXPRESS collegandola ai plugin
 	 */
 	protected async onInit(): Promise<void> {
-		super.onInit()
+		await super.onInit()
 
 		this.app = express()
 		this.buildProperties()
@@ -81,7 +81,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 	 * Alla fine di tutto metto il gestore degli errori
 	 */
 	protected async onInitAfter() {
-		super.onInitAfter()
+		await super.onInitAfter()
 		// il gestore degli errori va inserito per ultimo
 		this.app.use((err: Error, req: Request, res: Response, next) => {
 			// se c'e' un gestore di errore come figlio inoltra l'errore pure li
