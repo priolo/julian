@@ -4,10 +4,9 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { RootService } from "../../../core/RootService.js"
 import { Bus } from "../../../core/path/Bus.js"
-import { PathFinder } from "../../../core/path/PathFinder.js"
-import { RepoRestActions, RepoStructActions } from "../../../core/service/utils.js"
 import { getFreePort } from "../../ws/index.js"
 import * as jwtNs from "../jwt/index.js"
+import { RepoRestActions, RepoStructActions } from "../../typeorm/types.js"
 
 
 
@@ -45,8 +44,8 @@ beforeAll(async () => {
 								})
 
 								// get service and put payload
-								const jwtService = new PathFinder(root).getNode<jwtNs.Service>("/http/route-jwt")
-								await jwtService.putPayload(user, res)
+								const jwtService = root.nodeByPath<jwtNs.Service>("/http/route-jwt")
+								await jwtService!.putPayload(user, res)
 
 								// other method witout get service
 								/*
@@ -128,7 +127,7 @@ afterAll(async () => {
 })
 
 test("creation", async () => {
-	const rjwt = new PathFinder(root).getNode<jwtNs.Service>("/http/route-jwt")
+	const rjwt = root.nodeByPath<jwtNs.Service>("/http/route-jwt")
 	expect(rjwt).toBeInstanceOf(jwtNs.Service)
 })
 

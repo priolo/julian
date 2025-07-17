@@ -3,7 +3,7 @@
  */
 import http from 'http';
 import { getFreePort } from "../../ws/index.js";
-import { PathFinder, RootService } from "../../../index.js";
+import { RootService } from "../../../index.js";
 import { HttpRouterRestServiceBase } from "../rest/HttpRouterRestServiceBase.js";
 
 let PORT: number;
@@ -64,51 +64,51 @@ afterAll(async () => {
 });
 
 const httpRequest = (method: string, path: string, data?: any) => {
-    return new Promise((resolve, reject) => {
-        const options = {
-            hostname: 'localhost',
-            port: PORT,
-            path: path,
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            timeout: 5000, // Aggiungere un timeout di 5 secondi
-        };
+	return new Promise((resolve, reject) => {
+		const options = {
+			hostname: 'localhost',
+			port: PORT,
+			path: path,
+			method: method,
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			timeout: 5000, // Aggiungere un timeout di 5 secondi
+		};
 
-        const req = http.request(options, (res) => {
-            let body = '';
-            res.on('data', (chunk) => {
-                body += chunk;
-            });
-            res.on('end', () => {
-                try {
-                    const parsedData = body ? JSON.parse(body) : null;
-                    resolve({ status: res.statusCode, data: parsedData });
-                } catch (e) {
-                    reject(new Error(`Failed to parse response body: ${e.message}`));
-                }
-            });
-        });
+		const req = http.request(options, (res) => {
+			let body = '';
+			res.on('data', (chunk) => {
+				body += chunk;
+			});
+			res.on('end', () => {
+				try {
+					const parsedData = body ? JSON.parse(body) : null;
+					resolve({ status: res.statusCode, data: parsedData });
+				} catch (e) {
+					reject(new Error(`Failed to parse response body: ${e.message}`));
+				}
+			});
+		});
 
-        req.on('error', (e) => {
-            reject(new Error(`Request error: ${e.message}`));
-        });
+		req.on('error', (e) => {
+			reject(new Error(`Request error: ${e.message}`));
+		});
 
-        req.on('timeout', () => {
-            req.abort();
-            reject(new Error('Request timeout'));
-        });
+		req.on('timeout', () => {
+			req.abort();
+			reject(new Error('Request timeout'));
+		});
 
-        if (data) {
-            req.write(JSON.stringify(data));
-        }
-        req.end();
-    });
+		if (data) {
+			req.write(JSON.stringify(data));
+		}
+		req.end();
+	});
 };
 
 test("su creazione", async () => {
-	const test: TestRoute = PathFinder.Get(root, "/http/test");
+	const test: TestRoute = root.nodeByPath<TestRoute>("/http/test")!
 	expect(test instanceof TestRoute).toBeTruthy();
 
 	let res: any = await httpRequest('GET', `/user`);

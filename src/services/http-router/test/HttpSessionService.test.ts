@@ -1,7 +1,6 @@
 import axios, { AxiosInstance } from "axios"
 import path from "path"
 import { RootService } from "../../../core/RootService.js"
-import { PathFinder } from "../../../core/path/PathFinder.js"
 import * as typeormNs from "../../typeorm/index.js"
 import { getFreePort } from "../../ws/index.js"
 import { HttpSessionService } from "../session/HttpSessionService.js"
@@ -98,13 +97,13 @@ afterAll(async () => {
 })
 
 test("creazione", async () => {
-	const sesMem = new PathFinder(root).getNode<HttpSessionService>("/http/mem-session")
+	const sesMem = root.nodeByPath<HttpSessionService>("/http/mem-session")
 	expect(sesMem).toBeInstanceOf(HttpSessionService)
 
-	const sesType = new PathFinder(root).getNode<HttpSessionService>("/http/typeorm-session")
+	const sesType = root.nodeByPath<HttpSessionService>("/http/typeorm-session")
 	expect(sesType).toBeInstanceOf(HttpSessionService)
 
-	const typeorm = new PathFinder(root).getNode<typeormNs.Service>("/typeorm")
+	const typeorm = root.nodeByPath<typeormNs.Service>("/typeorm")
 	expect(typeorm).toBeInstanceOf(typeormNs.Service)
 })
 

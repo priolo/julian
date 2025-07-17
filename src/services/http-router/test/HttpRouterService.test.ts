@@ -1,7 +1,8 @@
 import axios, { AxiosInstance } from "axios"
 import { Request, Response } from "express"
 import { getFreePort } from "../../ws/index.js"
-import { PathFinder, RootService, error, httpRouter, http, ConfActions } from "../../../index.js"
+import { RootService, httpRouter, http } from "../../../index.js"
+import { NamesAction } from "../../../core/types.js"
 
 const { Service: HttpRouterService } = httpRouter
 const { Service: HttpService } = http
@@ -113,11 +114,6 @@ describe("Server HTTP e i suoi ROUTER", () => {
 								}
 							},
 							{
-								path: "/throw2", verb: "get", method: (req, res, next) => {
-									next(new error.ErrorNotify("test:error2"))
-								}
-							},
-							{
 								path: "/throw3", verb: "get", method: (req, res, next) => {
 									throw "test:error3"
 								}
@@ -148,7 +144,7 @@ describe("Server HTTP e i suoi ROUTER", () => {
 				}]
 			})
 			http.addChild(route)
-			await http.execute({ type: ConfActions.INIT })
+			await http.execute({ type: NamesAction.INIT })
 
 			const { data } = await axiosIstance.get(`/test`)
 			expect(data).toEqual({ response: "test-ok" })
@@ -160,7 +156,7 @@ describe("Server HTTP e i suoi ROUTER", () => {
 		 * Quindi come CHILD di un `HttpService` (o qualunque SERVICE che implementa `IHttpRouter`)
 		 * posso implementare e inserire `HttpRouterService` 
 		 */
-		const test = new PathFinder(root).getNode<TestRoute>("/http/test")
+		const test = root.nodeByPath<TestRoute>("/http/test")
 		expect(test instanceof TestRoute).toBeTruthy()
 	})
 
@@ -216,13 +212,6 @@ describe("Server HTTP e i suoi ROUTER", () => {
 
 		try {
 			await axiosIstance.get<any>(`/error/throw1`)
-		} catch (err) {
-			error = err
-		}
-		expect(error.response.status).toBe(500)
-
-		try {
-			await axiosIstance.get<any>(`/error/throw2`)
 		} catch (err) {
 			error = err
 		}

@@ -4,10 +4,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { RootService } from "../../../core/RootService.js";
 import { Bus } from "../../../core/path/Bus.js";
-import { PathFinder } from "../../../core/path/PathFinder.js";
-import { RepoRestActions } from "../../../core/service/utils.js";
 import { getFreePort } from "../../ws/index.js";
 import * as jwt from "../jwt/index.js";
+import { RepoRestActions } from "../../typeorm/types.js";
 
 
 
@@ -43,8 +42,8 @@ beforeAll(async () => {
 									payload: userId,
 								})
 
-								const jwtService = PathFinder.Get<jwt.Service>(root, "/http/route-jwt")
-								const token = await jwtService.putPayload(user, res)
+								const jwtService = root.nodeByPath<jwt.Service>("/http/route-jwt")
+								const token = await jwtService!.putPayload(user, res)
 
 								res.json({ token })
 							}
@@ -103,7 +102,7 @@ afterAll(async () => {
 })
 
 test("creazione", async () => {
-	const rjwt = new PathFinder(root).getNode<jwt.Service>("/http/route-jwt")
+	const rjwt = root.nodeByPath<jwt.Service>("/http/route-jwt")
 	expect(rjwt).toBeInstanceOf(jwt.Service)
 })
 

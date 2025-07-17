@@ -3,7 +3,6 @@ import fs from "fs";
 import path from 'path';
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { fileURLToPath } from 'url';
-import { PathFinder } from "../../../core/path/PathFinder.js";
 import { RootService } from "../../../core/RootService.js";
 import { getFreePort } from "../../ws/index.js";
 import { HttpRouterRestRepoService } from "../rest/HttpRouterRestRepoService.js";
@@ -75,7 +74,7 @@ describe("HTTP ROUTE REPOSITORY", () => {
 	})
 
 	test("su creazione", async () => {
-		const rr = new PathFinder(root).getNode<HttpRouterRestRepoService>("/http/user")
+		const rr = root.nodeByPath<HttpRouterRestRepoService>("/http/user")
 		expect(rr).toBeInstanceOf(HttpRouterRestRepoService)
 	})
 

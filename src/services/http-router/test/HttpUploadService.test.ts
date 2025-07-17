@@ -3,7 +3,6 @@ import FormData from "form-data"
 import fs from "fs"
 import path from "path"
 import { fileURLToPath } from 'url'
-import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"
 import { getFreePort } from "../../ws/index.js"
 import { HttpUploadService } from "../upload/HttpUploadService.js"
@@ -73,7 +72,7 @@ afterAll(async () => {
 
 
 test("su creazione", async () => {
-	const test = new PathFinder(root).getNode<HttpUploadService>("/http/route-upload")
+	const test = root.nodeByPath<HttpUploadService>("/http/route-upload")
 	expect(test).toBeInstanceOf(HttpUploadService)
 })
 
