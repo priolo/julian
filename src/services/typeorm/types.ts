@@ -18,7 +18,7 @@ export enum RepoStructActions {
  * per esempio "TypeormRepoBaseService"
  */
 export interface IRepoStructActions<T> {
-	[RepoStructActions.SEED]: (values: T[]) => Promise<void>;
+	[RepoStructActions.SEED]: (values: T[]) => Promise<any[]>;
 }
 
 /**

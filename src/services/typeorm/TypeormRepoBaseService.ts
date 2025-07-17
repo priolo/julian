@@ -116,28 +116,33 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	 * @param seeds 
 	 * @returns 
 	 */
-	private async seed(seeds: Array<any>): Promise<void> {
+	private async seed(seeds: Array<any>): Promise<any[]> {
 		if (!Array.isArray(seeds)) return
 		const repo = this.getRepo()
+		const results: any[] = []
 
 		for (const seed of seeds) {
 
+			let result: any = null
+
 			// is a string maybe SQL?
 			if (typeof seed == "string") {
-				await repo.query(seed)
-				continue
+				result = await repo.query(seed)
+
+				// is a Action ti dispatch
+				// { type: RepoStructActions.TRUNCATE }, 
+			} else if (!!seed.type) {
+				result = await this.execute(seed)
+				
+				// is object... maybe Entity?
+			} else {
+				result = await repo.save(seed)
 			}
 
-			// is a Action ti dispatch
-			// { type: RepoStructActions.TRUNCATE }, 
-			if (seed.type) {
-				await this.execute(seed)
-				continue
-			}
-
-			// is object... maybe Entity?
-			await repo.save(seed)
+			if (!!result) results.push(result)
 		}
+
+		return results
 	}
 
 	/**cancella i dati di una tabella disattivando le foregn keys */

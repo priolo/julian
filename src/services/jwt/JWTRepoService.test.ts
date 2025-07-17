@@ -1,6 +1,6 @@
 import { RootService } from "../../core/RootService.js"
-import { PathFinder } from "../../core/path/PathFinder.js";
 import * as jwtNs from "./index.js"
+
 
 
 test("su creazione", async () => {
@@ -10,7 +10,7 @@ test("su creazione", async () => {
 		secret: "secret_word!!!"
 	})
 
-	const jwt = new PathFinder(root).getNode<jwtNs.Service>("/jwt")
+	const jwt = root.nodeByPath<jwtNs.Service>("/jwt")!
 	expect(jwt instanceof jwtNs.Service).toBeTruthy()
 
 	const str = "test"

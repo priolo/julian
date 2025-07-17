@@ -1,5 +1,4 @@
 import WebSocket from "ws"
-import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"
 import * as wsNs from "../index.js"
 import { SocketServerConf } from "../SocketServerService.js"
@@ -34,13 +33,13 @@ afterAll(async () => {
 })
 
 test("su creazione", async () => {
-  const wss = new PathFinder(root).getNode<wsNs.Service>("/ws-server")
+  const wss = root.nodeByPath<wsNs.Service>("/ws-server")
   expect(wss).toBeInstanceOf(wsNs.Service)
 })
 
 test("client connetc/send/close", async () => {
   const myServer = new ServerObjects()
-  const wss: wsNs.Service = PathFinder.Get(root, "/ws-server")
+  const wss: wsNs.Service = root.nodeByPath("/ws-server")!
   wss.emitter.on("message", ({ client, message }) => myServer.receive(message, client))
   myServer.apply = ArrayApplicator.ApplyAction
   myServer.onSend = async (client, message) => wss.sendToClient(client, message)

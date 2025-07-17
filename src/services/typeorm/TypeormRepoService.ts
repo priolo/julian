@@ -1,3 +1,4 @@
+import { FindManyOptions } from "typeorm";
 import { TypeormRepoBaseService } from "./TypeormRepoBaseService.js";
 import { IRepoRestDispatch, RepoRestActions } from "./types.js";
 
@@ -15,7 +16,7 @@ export class TypeormRepoService extends TypeormRepoBaseService {
 			// https://typeorm.io/#/find-options
 			// opzione da usare in "ALL", Per esempio se il risultato deve comprendere anche delle relazioni:
 			// findOptions: { relations: ["documents"] },
-			findOptions: null,
+			findOptions: <FindManyOptions>null,
 		}
 	}
 
@@ -26,9 +27,9 @@ export class TypeormRepoService extends TypeormRepoBaseService {
 				const repo = this.getRepo()
 				return await repo.save(entity);
 			},
-			[RepoRestActions.ALL]: async () => {
+			[RepoRestActions.ALL]: async (payload:FindManyOptions) => {
 				const repo = this.getRepo()
-				return await repo.find(this.state.findOptions);
+				return await repo.find(payload ?? this.state.findOptions);
 			},
 			[RepoRestActions.GET_BY_ID]: async (id) => {
 				const repo = this.getRepo()

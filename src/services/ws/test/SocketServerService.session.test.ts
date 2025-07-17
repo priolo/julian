@@ -1,5 +1,6 @@
+import { time } from "@priolo/jon-utils"
 import { RootService } from "../../../core/RootService.js"
-import { getRandom, wait, wsFarm } from "../../../test_utils.js"
+import { getRandom, wsFarm } from "../../../test_utils.js"
 import * as wsNs from "../index.js"
 import { getFreePort } from "../utils.js"
 
@@ -99,8 +100,8 @@ test("manage cache", async () => {
 		clientClose.close()
 	})
 
-	// // aspetto un po' altrimenti manda il messaggio prima di chiudere sul server
-	await wait(100)
+	// aspetto un po' altrimenti manda il messaggio prima di chiudere sul server
+	await time.delay(100)
 
 	// mando un messaggio a tutti
 	const clientSend = clients[1]
@@ -114,7 +115,7 @@ test("manage cache", async () => {
 	})
 
 	// aspetto un po'
-	await wait(100)
+	await time.delay(100)
 
 	// riconnetto il client disconnesso precedentemente
 	let txtReceive

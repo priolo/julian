@@ -1,5 +1,4 @@
 import WebSocket from "ws"
-import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"
 import { Bus } from "../../../core/path/Bus.js"
 import * as jwtNs from "../../jwt/index.js"
@@ -44,7 +43,7 @@ afterAll(async () => {
 
 
 test("su creazione", async () => {
-	const wss = new PathFinder(root).getNode<wsNs.Service>("/http/ws-server")
+	const wss = root.nodeByPath<wsNs.Service>("/http/ws-server")
 	expect(wss).toBeInstanceOf(wsNs.Service)
 })
 

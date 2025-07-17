@@ -1,5 +1,4 @@
 import WebSocket from "ws"
-import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"
 import * as wsNs from "../index.js"
 import { getFreePort } from "../utils.js"
@@ -15,7 +14,11 @@ beforeAll(async () => {
 		{
 			class: "ws",
 			port: PORT,
-			onMessage: async function (client: wsNs.IClient, message: string) {
+			onLog: async function ({ name, payload }) {
+				if (name !== wsNs.SocketLog.MESSAGE) return
+				const client: wsNs.IClient = payload.client
+				const message: string = payload.message.toString()
+
 				try {
 					if (JSON.parse(message).path != null) return
 				} catch (error) { }
@@ -25,7 +28,11 @@ beforeAll(async () => {
 				{
 					class: "ws/route",
 					path: "command",
-					onMessage: async function (client: wsNs.IClient, message: string) {
+					onLog: async function ({ name, payload }) {
+						if (name !== wsNs.SocketLog.MESSAGE) return
+						const client: wsNs.IClient = payload.client
+						const message: string = payload.message.toString()
+
 						try {
 							if (JSON.parse(message).path != this.state.path) return
 						} catch (error) { }
@@ -38,7 +45,12 @@ beforeAll(async () => {
 					children: [{
 						class: "ws/route",
 						path: "pos2",
-						onMessage: async function (client: wsNs.IClient, message: string) {
+						onLog: async function ({ name, payload }) {
+							if (name !== wsNs.SocketLog.MESSAGE) return
+							const client: wsNs.IClient = payload.client
+							const message: string = payload.message.toString()
+
+
 							try {
 								if (!(JSON.parse(message).path as string).endsWith(`/${this.state.path}`)) return
 							} catch (error) { }
@@ -56,9 +68,9 @@ afterAll(async () => {
 })
 
 test("su creazione", async () => {
-	let srs = new PathFinder(root).getNode<wsNs.route>('/ws-server/{"path":"command"}')
+	let srs = root.nodeByPath<wsNs.route>('/ws-server/{"path":"command"}')
 	expect(srs).toBeInstanceOf(wsNs.route)
-	srs = new PathFinder(root).getNode<wsNs.route>('/ws-server/{"path":"room1"}')
+	srs = root.nodeByPath<wsNs.route>('/ws-server/{"path":"room1"}')
 	expect(srs).toBeInstanceOf(wsNs.route)
 })
 
@@ -82,7 +94,7 @@ test("message on subpath", async () => {
 
 	// se ricevo una risposta la memorizzo
 	ws.on('message', (message: string) => {
-		result.push(message)
+		result.push(message.toString())
 		if (result.length == 5) ws.close()
 	})
 
@@ -96,7 +108,4 @@ test("message on subpath", async () => {
 		`room1/pos2::receive:{\"path\":\"room1/pos2\",\"action\":\"message\",\"payload\":{\"message\":\"<room1-pos2>\"}}`,
 		`command::receive:{\"path\":\"command\",\"action\":\"message\",\"payload\":{\"message\":\"<command>\"}}`,
 	])
-
-
-
 })

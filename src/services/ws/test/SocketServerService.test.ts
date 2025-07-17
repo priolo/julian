@@ -1,9 +1,8 @@
 import { WebSocket } from "ws"
-import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"
 import * as wsNs from "../index.js"
 import { SocketServerConf } from "../SocketServerService.js"
-import { getFreePort, SocketRouteActions } from "../utils.js"
+import { getFreePort } from "../utils.js"
 
 
 
@@ -19,13 +18,16 @@ beforeAll(async () => {
 			children: [
 				{
 					class: "ws/route",
-					onMessage: async function (client, message) {
+					onLog: async function ({ name, payload }) {
+						if ( name !== wsNs.SocketLog.MESSAGE ) return
+						const { client, message } = payload as { client: wsNs.IClient, message: string }
+						
 						await this.execute({
-							type: SocketRouteActions.SEND,
+							type: wsNs.SocketRouteActions.SEND,
 							payload: { client, message }
 						})
 						await this.execute({
-							type: SocketRouteActions.DISCONNECT,
+							type: wsNs.SocketRouteActions.DISCONNECT,
 							payload: client
 						})
 					},
@@ -41,7 +43,7 @@ afterAll(async () => {
 
 
 test("su creazione", async () => {
-	const wss = new PathFinder(root).getNode<wsNs.Service>("/ws-server")
+	const wss = root.nodeByPath<wsNs.Service>("/ws-server")!
 	expect(wss).toBeInstanceOf(wsNs.Service)
 })
 
@@ -53,7 +55,7 @@ test("client connect/send/close", async () => {
 		ws.on('open', function open() {
 			ws.send(dateNow.toString())
 		});
-		ws.on('message', (data:ArrayBuffer) => {
+		ws.on('message', (data: ArrayBuffer) => {
 			result = data.toString()
 		});
 		ws.on('close', function close() {

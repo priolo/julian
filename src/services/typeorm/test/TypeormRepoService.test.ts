@@ -87,6 +87,7 @@ test("USER", async () => {
 
 	const rep = root.nodeByPath<typeormNs.repo>("/typeorm/user")
 	expect(rep).toBeInstanceOf(typeormNs.repo)
+	if (!rep) throw new Error("rep is null");
 
 	// crea due USER
 	await rep.execute({
@@ -159,6 +160,7 @@ test("ACCOUNT", async () => {
 
 	const rep = root.nodeByPath<typeormNs.repo>("/typeorm/account")
 	expect(rep).toBeInstanceOf(typeormNs.repo)
+	if (!rep) throw new Error("rep is null");
 
 	// crea due ACCOUNT
 	await rep.execute({
@@ -186,6 +188,7 @@ test("ITEMS", async () => {
 
 	const rep = root.nodeByPath<typeormNs.repo>("/typeorm/item")
 	expect(rep).toBeInstanceOf(typeormNs.repo)
+	if (!rep) throw new Error("rep is null");
 
 	// crea due ITEM
 	await rep.execute({

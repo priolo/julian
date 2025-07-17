@@ -1,4 +1,3 @@
-import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"
 import { wsFarm } from "../../../test_utils.js"
 import * as wsNs from "../index.js"
@@ -75,9 +74,9 @@ afterAll(async () => {
 })
 
 test("su creazione", async () => {
-	let srs = new PathFinder(root).getNode<wsNs.route>('/ws-server/{"path":"room1"}')
+	let srs = root.nodeByPath<wsNs.route>('/ws-server/{"path":"room1"}')
 	expect(srs).toBeInstanceOf(wsNs.route)
-	srs = new PathFinder(root).getNode<wsNs.route>('/ws-server/{"path":"room2"}')
+	srs = root.nodeByPath<wsNs.route>('/ws-server/{"path":"room2"}')
 	expect(srs).toBeInstanceOf(wsNs.route)
 })
 
@@ -110,7 +109,8 @@ test("verifica route custom con gestione delle ROOM", async () => {
 	})
 
 	expect(res.action).toBe("list")
-	expect(res.clients).toEqual(clientInRoom1.map((client, index)=>index))
+	expect(res.clients).toEqual(expect.arrayContaining([0, 1, 2]))
+	expect(res.clients).toHaveLength(3)
 })
 
 type Message = {

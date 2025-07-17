@@ -2,15 +2,15 @@
  * @jest-environment node
  */
 import { RootService } from "../../../core/RootService.js"
-import { wsFarm, wait } from "../../../test_utils.js"
+import { wsFarm } from "../../../test_utils.js"
 
 import * as wsNs from "../index.js"
 import { getFreePort } from "../utils.js"
 
 
 
-let PORT
-let root = null
+let PORT: number
+let root:RootService
 
 class PluginPing extends wsNs.route {
 

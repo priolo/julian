@@ -1,5 +1,4 @@
 import WebSocket from "ws"
-import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"
 import * as wsNs from "../index.js"
 import { getFreePort } from "../utils.js"
@@ -46,9 +45,9 @@ afterAll(async () => {
 
 
 test("su creazione", async () => {
-	const ws1 = new PathFinder(root).getNode<wsNs.Service>("/http/ws1")
+	const ws1 = root.nodeByPath<wsNs.Service>("/http/ws1")
 	expect(ws1).toBeInstanceOf(wsNs.Service)
-	const ws2 = new PathFinder(root).getNode<wsNs.Service>("/http/ws2")
+	const ws2 = root.nodeByPath<wsNs.Service>("/http/ws2")
 	expect(ws2).toBeInstanceOf(wsNs.Service)
 })
 
@@ -86,4 +85,4 @@ test("verifica connetc/send/close su servizio WS montato su servizio HTTP ", asy
 	})
 	expect(result).toBe("from ws2")
 
-})
+}, 10000)

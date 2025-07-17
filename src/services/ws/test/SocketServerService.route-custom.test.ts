@@ -1,5 +1,6 @@
+import { time } from "@priolo/jon-utils"
 import { RootService } from "../../../core/RootService.js"
-import { distancePoints, getRandom, wsFarm, wait } from "../../../test_utils.js"
+import { distancePoints, getRandom, wsFarm } from "../../../test_utils.js"
 import * as wsNs from "../index.js"
 import { getFreePort } from "../utils.js"
 
@@ -82,7 +83,7 @@ test("send send/receive position near", async () => {
 		})
 
 		// aspetto che tutte le posizioni siano mandate
-		await wait(1000)
+		await time.delay(1000)
 
 		// di un CLIENT-RANDOM manda un MESSAGE "radar" da consegnare a tutti i suoi "near"
 		clients[senderIndex].send(JSON.stringify({ path: "near", action: "radar", payload: distance }))

@@ -1,6 +1,6 @@
 import { Request } from "express"
 import net from "net"
-import url, { URLSearchParams } from 'url'
+import { URLSearchParams } from 'url'
 import { IClient } from "./types.js"
 
 
