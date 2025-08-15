@@ -28,6 +28,7 @@ export class SocketServerService extends SocketCommunicator {
 			jwt: <string>null,
 			clients: <IClient[]>[],
 			onAuth: <(jwtPayload: string) => boolean>null,
+			path: <string>null,
 		}
 	}
 

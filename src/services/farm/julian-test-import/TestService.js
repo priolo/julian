@@ -1,4 +1,4 @@
-import { ServiceBase } from "typexpress";
+import { ServiceBase } from "@priolo/julian";
 import { Actions } from "./utils.js";
 /**
  * E' solo un NODE di test per vedere se funziona l'import npm

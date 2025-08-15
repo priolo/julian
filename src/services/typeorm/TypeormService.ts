@@ -82,8 +82,8 @@ export class TypeormService extends ServiceBase {
 
 		// creo gli oggetti EntitySchema che dovro' passare a typeorm
 		if (entities.length > 0) {
-			options.entities = [
-				...options.entities ?? [],
+			(<any>options).entities = [
+				...(<any>options).entities ?? [],
 				...entities
 			]
 		}

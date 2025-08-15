@@ -43,10 +43,10 @@ export abstract class NodeState extends Node {
 	/**
 	 * Stato attuale del nodo
 	 */
-	get state() {
+	get state(): this['stateDefault'] & { [key: string]: any } {
 		return this._state
 	}
-	protected _state: any = {}
+	protected _state!: this['stateDefault'] & { [key: string]: any }
 
 	/**
 	 * Modifica lo stato

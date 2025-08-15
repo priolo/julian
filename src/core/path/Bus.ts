@@ -25,7 +25,7 @@ export class Bus {
 	 * Consegna un "Action" al suo destinatario partendo dal nodo "this.sender"
 	 * @param action 
 	 */
-	async dispatch(action: IAction | string): Promise<any> {
+	async dispatch<T=any>(action: IAction | string): Promise<T> {
 		if (!action) throw "errore parametro action"
 		if (typeof action == "string") action = { type: action } as IAction
 		const dest:NodeState = this.sender.nodeByPath(this.path)

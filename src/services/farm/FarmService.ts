@@ -35,8 +35,15 @@ export default class FarmService extends Node {
         try {
             if (repo == "npm") {
                 const rootPath = getRuntimeRoot()
-                const modulePath = p.resolve(rootPath, 'node_modules', `${pathAndClass}/dist`)
-                module = await import(pathToFileURL(modulePath).href)
+                let modulePath = p.resolve(rootPath, 'node_modules', `${pathAndClass}/dist`)
+                if (!fs.existsSync(modulePath)) {
+                    modulePath = p.resolve(rootPath, 'node_modules', `${pathAndClass}`)
+                }
+                try {
+                    module = await import(pathToFileURL(modulePath).href)
+                } catch (error) {
+                    module = await import(pathToFileURL(modulePath).href + "/index.js")
+                }
                 return module.default
             } else {
                 const localPath = p.resolve(__dirname, "..", path)
@@ -96,7 +103,7 @@ function splitOne(str: string, div: string, null2: boolean = false): [string, st
     return [str.slice(0, index), str.slice(index + 1)]
 }
 
-function findProjectRoot(currentDir:string):string {
+function findProjectRoot(currentDir: string): string {
     const rootPath = p.parse(currentDir).root;
     while (currentDir !== rootPath) {
         if (fs.existsSync(p.join(currentDir, 'package.json'))) {

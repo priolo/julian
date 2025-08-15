@@ -12,7 +12,7 @@ export type HttpRouterServiceBaseConf = Partial<HttpRouterServiceBase['stateDefa
  */
 export abstract class HttpRouterServiceBase extends ServiceBase implements IHttpRouter {
 
-	private router: Router = null
+	protected router: Router = null
 
 	get stateDefault() {
 		return {
