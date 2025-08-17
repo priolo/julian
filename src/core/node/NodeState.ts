@@ -35,7 +35,7 @@ export abstract class NodeState extends Node {
 		return {
 			/** se c'e' è nome da dare al nodo */
 			name: <string>null,
-			/** se c'e' viene chiamata su quauque log emesso */
+			/** chiamato su qualunque LOG emesso da questo NODE */
 			onLog: <(this: NodeState, log: ILog) => void>null,
 		}
 	}
@@ -59,7 +59,8 @@ export abstract class NodeState extends Node {
 		if (noEmit) return
 		this.log(
 			NamesLog.STATE_CHANGED,
-			{ old, current: this._state, partial: partialState }
+			{ old, current: this._state, partial: partialState },
+			TypeLog.SYSTEM
 		)
 	}
 

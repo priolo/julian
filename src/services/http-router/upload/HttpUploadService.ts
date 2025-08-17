@@ -1,9 +1,9 @@
-import { log, LOG_TYPE } from "@priolo/jon-utils"
+import { filesystem } from "@priolo/jon-utils"
 import { Request, Response, Router } from "express"
 import fs from "fs"
 import multer from 'multer'
 import path from "path"
-import { filesystem } from "@priolo/jon-utils"
+import { TypeLog } from "../../../core/types.js"
 import { HttpRouterServiceBase } from "../HttpRouterServiceBase.js"
 
 
@@ -72,7 +72,7 @@ export class HttpUploadService extends HttpRouterServiceBase {
                 // [II] non posso usare i promise perche' a quanto pare multer non è sincronizzato
                 //await createDirIfNotExist(dirDest)
                 if (!fs.existsSync(dirDest)) {
-                    log(`Directory "${dirDest}" not found. I try to create it myself`, LOG_TYPE.INFO)
+                    this.log(`Directory "${dirDest}" not found. I try to create it myself`, null, TypeLog.WARN)
                     fs.mkdirSync(dirDest, { recursive: true })
                 }
                 // restituisco la "dirDest"

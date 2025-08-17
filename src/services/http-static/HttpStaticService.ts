@@ -1,10 +1,10 @@
-import { log, LOG_TYPE } from "@priolo/jon-utils"
 import express, { Router } from "express"
 import fs from "fs"
 import p from "path"
 import serveIndex from "serve-index"
 import { fileURLToPath } from 'url'
 import { HttpRouterServiceBase } from "../../services/http-router/HttpRouterServiceBase.js"
+import { TypeLog } from "../../core/types.js"
 
 
 
@@ -45,11 +45,11 @@ export class HttpStaticService extends HttpRouterServiceBase {
 	protected async onInit(): Promise<void> {
 		const { dir, path } = this.state
 		if (!fs.existsSync(dir)) {
-			log(`Directory "${dir}" not found. I try to create it myself`, LOG_TYPE.INFO)
+			this.log(`Directory "${dir}" not found. I try to create it myself`, null, TypeLog.WARN)
 			fs.mkdirSync(dir)
 		}
 		await super.onInit()
-		log(`HttpStaticService:start:path:[${path}]>[${dir}]`, LOG_TYPE.INFO)
+		this.log(`HttpStaticService:start:path:[${path}]>[${dir}]`, null, TypeLog.INFO)
 	}
 
 	protected onBuildRouter(): Router {

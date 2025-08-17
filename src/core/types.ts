@@ -79,6 +79,10 @@ export enum TypeLog {
 	ERROR = "error",
 	/** log di errore grave */
 	FATAL = "fatal",
+	/** sono gli eventi interno di julian come INIT e DESTROY o l'update dei NODE */
+	EVENT = "event",
+	/** eventi dei nodi istanziati */
+	SYSTEM = "system",
 }
 
 /**

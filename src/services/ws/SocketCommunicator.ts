@@ -59,12 +59,12 @@ export abstract class SocketCommunicator extends ServiceBase {
 	/**
 	 * Richiamato quando c'e' un MESSAGE dal CLIENT
 	 */
-	onMessage(client: IClient, message: string) {
+	async onMessage(client: IClient, message: string) {
 		if (!client || !message) return
 		//this.state.onMessage?.bind(this)(client, message)
 		this.log(SocketLog.MESSAGE, { client, message })
 		for (const node of this.children) {
-			(<SocketCommunicator>node)?.onMessage?.(client, message)
+			await (<SocketCommunicator>node)?.onMessage?.(client, message)
 		}
 	}
 

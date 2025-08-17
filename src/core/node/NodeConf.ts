@@ -60,7 +60,7 @@ export class NodeConf extends NodeState {
 	 * [LOG] NODE_INIT
 	 */
 	protected async onInit(): Promise<void> { 
-		this.log(NamesLog.NODE_INIT)
+		this.log(NamesLog.NODE_INIT, null, TypeLog.SYSTEM)
 	}
 
 	/**
@@ -68,7 +68,7 @@ export class NodeConf extends NodeState {
 	 * [LOG] NODE_INIT_AFTER
 	 */
 	protected async onInitAfter(): Promise<void> { 
-		this.log(NamesLog.NODE_INIT_AFTER)
+		this.log(NamesLog.NODE_INIT_AFTER, null, TypeLog.SYSTEM)
 	}
 
 	/**
@@ -144,7 +144,7 @@ export class NodeConf extends NodeState {
 	 * [LOG] NODE_DELETED
 	 */
 	protected async onDestroy(): Promise<void> { 
-		this.log(NamesLog.NODE_DELETED)
+		this.log(NamesLog.NODE_DELETED, null, TypeLog.SYSTEM)
 	}
 
 }

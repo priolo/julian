@@ -34,6 +34,7 @@ export class ServiceBase extends NodeConf {
 
 	/**
 	 * trasmette al parent un log
+	 * e lo emette per i listeners
 	 * @override
 	 */
 	emitLog(log: ILog) {

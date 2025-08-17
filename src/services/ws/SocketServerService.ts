@@ -68,12 +68,13 @@ export class SocketServerService extends SocketCommunicator {
 		const { port } = this.state
 		if (port) {
 			await this.buildServer()
+			this.log(`SocketServerService:start:url:[http://localhost:${this.state.port}]`, null, TypeLog.INFO)
 		} else {
 			this.attachToServerHttp()
 		}
 		this.buildEventsServer()
 	}
-
+ 
 	/**
 	 * Costruisce un SERVER-WEB-SOCKET senza bisogno di un SERVER-HTTP 
 	 */
@@ -185,12 +186,16 @@ export class SocketServerService extends SocketCommunicator {
 	 */
 	private buildEventsClient(cws: WebSocket) {
 
-		cws.on('message', (message: string) => {
+		cws.on('message', async (message: string) => {
 			// const msg: string = typeof message === 'string' 
 			// 	? message 
 			// 	: Buffer.from(message).toString()
 			const client = this.findClientByCWS(cws)
-			this.onMessage(client, message)
+			try {
+				await this.onMessage(client, message)
+			} catch (error) {
+				this.log("ws:onMessage", error, TypeLog.ERROR)
+			}
 		})
 
 		cws.on('error', (error) => { debugger })

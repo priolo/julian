@@ -97,7 +97,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 	protected async onDestroy(): Promise<void> {
 		return new Promise<void>((res, rej) => {
 			this._server.close((err) => {
-				log(`HttpService:stop`, LOG_TYPE.INFO)
+				this.log(`HttpService:stop`, null, TypeLog.INFO)
 				this._server = null
 				res()
 			})
@@ -152,7 +152,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 			const listener = this._server.listen(
 				this.state.port,
 				() => {
-					log(`HttpService:start:url:[http://localhost:${this.state.port}]`, LOG_TYPE.INFO)
+					this.log(`HttpService:start:url:[http://localhost:${this.state.port}]`, null, TypeLog.INFO)
 					res(listener)
 				}
 			)
