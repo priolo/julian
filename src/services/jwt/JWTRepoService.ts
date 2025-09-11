@@ -4,6 +4,8 @@ import { Actions } from "./utils.js";
 
 
 
+export type JWTServiceConf = Partial<JWTRepoService['stateDefault']> & { class: "jwt" }
+
 export class JWTRepoService extends ServiceBase {
 
 	get stateDefault(): any {

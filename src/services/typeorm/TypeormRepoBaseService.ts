@@ -131,7 +131,7 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 
 				// is a Action ti dispatch
 				// { type: RepoStructActions.TRUNCATE }, 
-			} else if (!!seed.type) {
+			} else if (!!seed.type && Object.keys(seed).length === 1) {
 				result = await this.execute(seed)
 				
 				// is object... maybe Entity?
