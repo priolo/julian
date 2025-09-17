@@ -8,27 +8,28 @@ import { getFreePort } from "../utils.js"
 let PORT: number
 let root: RootService
 
+/**
+ * non uso piu' il PATH
+ */
 beforeAll(async () => {
 	PORT = await getFreePort()
 	root = await RootService.Start(
-		{
+		<wsNs.conf>{
 			class: "ws",
 			port: PORT,
-			onLog: async function ({ name, payload }) {
+			onLog: function (this: wsNs.Service, { name, payload }) {
 				if (name !== wsNs.SocketLog.MESSAGE) return
-				const client: wsNs.IClient = payload.client
-				const message: string = payload.message.toString()
-
+				const { client, message }: { client: wsNs.IClient, message: string } = payload
 				try {
 					if (JSON.parse(message).path != null) return
 				} catch (error) { }
-				this.sendToClient(client, `root::receive:${message}`)
+				// this.sendToClient(client, `root::receive:${message}`)
 			},
-			children: [
+			children:<wsNs.SocketRouteConf[]> [
 				{
 					class: "ws/route",
 					path: "command",
-					onLog: async function ({ name, payload }) {
+					onLog: function (this: wsNs.route, { name, payload }) {
 						if (name !== wsNs.SocketLog.MESSAGE) return
 						const client: wsNs.IClient = payload.client
 						const message: string = payload.message.toString()
@@ -45,7 +46,7 @@ beforeAll(async () => {
 					children: [{
 						class: "ws/route",
 						path: "pos2",
-						onLog: async function ({ name, payload }) {
+						onLog: function (this: wsNs.route, { name, payload }) {
 							if (name !== wsNs.SocketLog.MESSAGE) return
 							const client: wsNs.IClient = payload.client
 							const message: string = payload.message.toString()

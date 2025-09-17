@@ -10,8 +10,7 @@ let PORT: number
 let root: RootService
 
 /**
- * Questo ROUTE-CUSTOM invia un messaggio "we are close" a tutti i CLIENTS che si trovano entro una certa distanza
- * da un CLIENT che ha inviato un messaggio "radar"
+ * il plugin mantiene dei CLIENT in cache cosi' da avere la loro sessione anche quando si disconnettono tramite "id"
  */
 class PluginSession extends wsNs.route {
 
@@ -25,7 +24,6 @@ class PluginSession extends wsNs.route {
 		const [cdel] = this.clientsCache.splice(index, 1)
 		cdel["cache"].forEach((message: string) => this.sendToClient(client, message))
 		cdel["cache"] = null
-
 	}
 
 	/**
@@ -37,7 +35,7 @@ class PluginSession extends wsNs.route {
 		this.clientsCache.push(client)
 	}
 
-	onMessage(client: wsNs.IClient, message: string) {
+	async onMessage(client: wsNs.IClient, message: string) {
 		//super.onMessage(client, message)
 		const msg = JSON.parse(message)
 		if (msg.action == "to-all") {

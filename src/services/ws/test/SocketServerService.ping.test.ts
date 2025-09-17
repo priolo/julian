@@ -3,16 +3,17 @@
  */
 import { RootService } from "../../../core/RootService.js"
 import { wsFarm } from "../../../test_utils.js"
-
 import * as wsNs from "../index.js"
 import { getFreePort } from "../utils.js"
 
 
 
 let PORT: number
-let root:RootService
+let root: RootService
 
 class PluginPing extends wsNs.route {
+
+	private idTimer: any
 
 	protected async onInit(): Promise<void> {
 		await super.onInit()
@@ -22,7 +23,6 @@ class PluginPing extends wsNs.route {
 		await super.onDestroy()
 		clearTimeout(this.idTimer)
 	}
-	idTimer
 
 	check() {
 		const clients = this.getClients()
@@ -46,48 +46,53 @@ class PluginPing extends wsNs.route {
 		client["lastPing"] = Date.now()
 	}
 
-	onMessage(client: wsNs.IClient, message: string) {
+	async onMessage(client: wsNs.IClient, message: string) {
 		super.onMessage(client, message)
 		client["lastPing"] = Date.now()
 	}
 }
 
-beforeAll(async () => {
-	PORT = await getFreePort()
-	root = await RootService.Start(
-		{
-			class: "ws",
-			port: PORT,
-			children: [
-				{
-					class: PluginPing,
-				},
-			]
-		}
-	)
-})
 
-afterAll(async () => {
-	await RootService.Stop(root)
-})
 
-test("send send/receive position near", async () => {
+describe("Creazione di un plugin (cioe' estensionre del socketroute)", () => {
 
-	const { index, code } = await new Promise<any>(async (res, rej) => {
-		const clients = await wsFarm(
-			`ws://localhost:${PORT}/`,
-			3,
-			(client, index) => {
-				// simulo il malfunzionamento del client 1
-				if (index == 1) client["pong"] = () => { }
-				client.on("close", (code, reason) => {
-					res({ index, code })
-				})
+	beforeAll(async () => {
+		PORT = await getFreePort()
+		root = await RootService.Start(
+			<wsNs.conf>{
+				class: "ws",
+				port: PORT,
+				children: [
+					{
+						class: PluginPing,
+					},
+				]
 			}
 		)
 	})
 
-	expect(index).toBe(1)
-	expect(code).toBe(1005) // https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent?retiredLocale=it
-})
+	afterAll(async () => {
+		await RootService.Stop(root)
+	})
 
+	test("send send/receive position near", async () => {
+
+		const { index, code } = await new Promise<any>(async (res, rej) => {
+			const clients = await wsFarm(
+				`ws://localhost:${PORT}/`,
+				3,
+				(client, index) => {
+					// simulo il malfunzionamento del client 1
+					if (index == 1) client["pong"] = () => { }
+					client.on("close", (code, reason) => {
+						res({ index, code })
+					})
+				}
+			)
+		})
+
+		expect(index).toBe(1)
+		expect(code).toBe(1005) // https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent?retiredLocale=it
+	}, 10000)
+
+})

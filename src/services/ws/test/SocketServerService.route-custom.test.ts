@@ -14,10 +14,14 @@ let root: RootService
  * da un CLIENT che ha inviato un messaggio "radar"
  */
 class RouteCustom extends wsNs.route {
-	onMessage(client: wsNs.IClient, msg: string) {
+	async onMessage(client: wsNs.IClient, msg: string) {
 		const message = JSON.parse(msg)
+
+		// è il settaggio della posizione
 		if (message.action == "position") {
 			client["position"] = message.payload
+
+		// è la richiesta di invio del messaggio "we are close" a tutti i client vicini
 		} else if (message.action == "radar") {
 			const distance = message.payload
 			const clients = this.getClients()
@@ -36,7 +40,6 @@ beforeAll(async () => {
 			children: [
 				{
 					class: RouteCustom,
-					path: "near",
 				},
 			]
 		}
@@ -70,7 +73,8 @@ test("send send/receive position near", async () => {
 		// creo il CLIENT e mando la sua posizione
 		const clients = await wsFarm(`ws://localhost:${PORT}/`, positions.length, (client, index) => {
 
-			client.send(JSON.stringify({ path: "near", action: "position", payload: positions[index!] }))
+			// mano la posizione del CLIENT
+			client.send(JSON.stringify({ action: "position", payload: positions[index!] }))
 
 			// se il CLIENT riceve "near" allora lo metto nell'array indexReceive
 			client.on('message', message => {
@@ -86,7 +90,7 @@ test("send send/receive position near", async () => {
 		await time.delay(1000)
 
 		// di un CLIENT-RANDOM manda un MESSAGE "radar" da consegnare a tutti i suoi "near"
-		clients[senderIndex].send(JSON.stringify({ path: "near", action: "radar", payload: distance }))
+		clients[senderIndex].send(JSON.stringify({ action: "radar", payload: distance }))
 	})
 
 	indexNear.sort()

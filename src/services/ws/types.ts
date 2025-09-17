@@ -11,6 +11,8 @@ export interface IClient {
 	params?: any
 	/** PAYLOAD-JWT se è stato definito	*/
 	jwtPayload?: any
+	/** Permette di aggiungere qualsiasi altra proprietà */
+	[key: string]: any
 }
 
 /**

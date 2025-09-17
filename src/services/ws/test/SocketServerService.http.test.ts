@@ -8,7 +8,9 @@ import { getFreePort } from "../utils.js"
 let PORT: number
 let root: RootService
 
-
+/**
+ * non uso piu' il PATH!!!
+ */
 beforeAll(async () => {
 	PORT = await getFreePort()
 	root = await RootService.Start(

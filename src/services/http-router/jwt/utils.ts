@@ -1,10 +1,6 @@
-import { Request, Response } from "express"
+import { CookieOptions, Request, Response } from "express"
 
-/** 
- * è il NOME della proprietà che il SERVICE JWT inserisce 
- * nella "Request" express che contiene il PAYLOAD
- */
-export const JWT_PAYLOAD_PROP = "jwtPayload"
+
 
 /**
  * le ACTIONS che possono essere invitate al SERVICE JWT
@@ -14,16 +10,14 @@ export enum RouteJWTUserActions {
     GENERATE_TOKEN = "generate_token",
 }
 
-
 /** Genera una STRATEGY di tipo COOKIE per la gestione del JWT */
-export function CookieStrategyFarm(options):JWTStrategy {
+export function CookieStrategyFarm(options:CookieOptions, name:string = "jwt"):JWTStrategy {
     return {
         getToken: (req: Request) => {
-            const { token } = req.cookies
-            return token
+            return req.cookies[name]
         },
         putToken: ( token:string, res:Response) => {
-            res.cookie('token', token, options)
+            res.cookie(name, token, options)
         },
     }
 }

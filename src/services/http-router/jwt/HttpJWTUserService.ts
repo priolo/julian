@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express"
 import { Bus } from "../../../core/path/Bus.js"
 import * as jwtNs from "../../jwt/index.js"
 import { HttpRouterServiceBase } from "../HttpRouterServiceBase.js"
-import { CookieStrategy, JWT_PAYLOAD_PROP, RouteJWTUserActions } from "./utils.js"
+import { CookieStrategy, RouteJWTUserActions } from "./utils.js"
 
 
 
@@ -16,6 +16,11 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
         return {
             ...super.stateDefault,
             name: "route-jwt",
+            /** 
+             * è il NOME della proprietà che il SERVICE JWT inserisce 
+             * nella "Request" express che contiene il PAYLOAD
+             */
+            payloadPropertyName: "jwtPayload",
             // la path del jwt che si occupa di codificare/decodificare
             jwt: "",                    // path-jwt:request
             strategy: CookieStrategy,   // strategia da attuare per il login
@@ -49,7 +54,7 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
             if (!payload) return res.sendStatus(401)
 
             // inserisco il payload nel messaggio request e continuo nei router express
-            req[JWT_PAYLOAD_PROP] = payload
+            req[this.state.payloadPropertyName] = payload
             next()
         })
 
@@ -69,9 +74,8 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
     }
 
     /** 
-     * quando il LOGIN ha avuto successo 
-     * valorizzo il parametro "payload" (generalmente l'user loggato)
-     * e ricevo il TOKEN JWT
+     * genero un TOKEN tramite payload 
+     * e lo inserisco nella "strategy" (header o cookies)
      */
     public async putPayload(payload: any, res: Response): Promise<string> {
         const token = await this.generateToken(payload)
