@@ -3,10 +3,8 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { fileURLToPath } from 'url';
 import { RootService } from "../../../core/RootService.js";
 import { Bus } from "../../../core/path/Bus.js";
-import { PathFinder } from "../../../core/path/PathFinder.js";
-import { RepoRestActions, RepoStructActions } from "../../../core/service/utils.js";
-import { deleteIfExist } from "../../fs/index.js";
 import * as orm from "../index.js";
+import { deleteIfExist } from "@priolo/jon-utils/dist/fs/index.js";
 
 
 
@@ -97,7 +95,7 @@ beforeAll(async () => {
 						class: "typeorm/repo", 
 						model: "Item",
 						seeds: [
-							{ type: RepoStructActions.TRUNCATE },
+							{ type: orm.RepoStructActions.TRUNCATE },
 							{ label: "primo" }, { label: "secondo" }, { label: "terzo" }, { label: "quarto" }, { label: "quinto" }, { label: "sesto" },
 						]
 					},
@@ -106,7 +104,7 @@ beforeAll(async () => {
 		]
 	)
 
-	await new Bus(root, "/typeorm/item").dispatch({ type: RepoStructActions.SEED })
+	await new Bus(root, "/typeorm/item").dispatch({ type: orm.RepoStructActions.SEED })
 })
 
 afterAll(async () => {
@@ -117,9 +115,9 @@ afterAll(async () => {
 test("Check seed create", async () => {
 
 	// creo gli user con un SEED
-	const rep = new PathFinder(root).getNode<orm.repo>("/typeorm/user")
+	const rep = root.nodeByPath<orm.repo>("/typeorm/user")!
 	await rep.execute({
-		type: RepoStructActions.SEED,
+		type: orm.RepoStructActions.SEED,
 		payload: [
 			`INSERT INTO User (firstName, lastName, age) VALUES ("Ivano", "Iorio", 45);`,
 			{
@@ -133,7 +131,7 @@ test("Check seed create", async () => {
 	})
 
 	// CONTROLLO GLI USER
-	let users = await rep.execute({ type: RepoRestActions.ALL })
+	let users = await rep.execute({ type: orm.RepoRestActions.ALL })
 	expect(users).toMatchObject([
 		{ firstName: 'Ivano', lastName: 'Iorio', age: 45 },
 		{
@@ -147,21 +145,21 @@ test("Check seed create", async () => {
 
 	// ELIMINO GLI USER CON UN SEED
 	await rep.execute({
-		type: RepoStructActions.SEED, payload: [
-			{ type: RepoStructActions.CLEAR },
+		type: orm.RepoStructActions.SEED, payload: [
+			{ type: orm.RepoStructActions.CLEAR },
 		]
 	})
 
 	// CONTROLLO CHE NON CI SIANO PIU'
-	users = await rep.execute({ type: RepoRestActions.ALL })
+	users = await rep.execute({ type: orm.RepoRestActions.ALL })
 	expect(users.length).toEqual(0)
 })
 
 test("Check seed config", async () => {
 
 	// ESEGUO UN SEED DA CONFIG
-	const rep = new PathFinder(root).getNode<orm.repo>("/typeorm/item")
-	let items = await rep.execute({ type: RepoRestActions.ALL })
+	const rep = root.nodeByPath<orm.repo>("/typeorm/item")!
+	let items = await rep.execute({ type: orm.RepoRestActions.ALL })
 	expect(items[0].label).toBe("primo")
 	expect(items[1].label).toBe("secondo")
 	expect(items[5].label).toBe("sesto")
@@ -169,9 +167,9 @@ test("Check seed config", async () => {
 
 test("Check delete cascade", async () => {
 	// creo gli user con un SEED
-	let rep = new PathFinder(root).getNode<orm.repo>("/typeorm/user")
+	let rep = root.nodeByPath<orm.repo>("/typeorm/user")!
 	await rep.execute({
-		type: RepoStructActions.SEED,
+		type: orm.RepoStructActions.SEED,
 		payload: [
 			{
 				firstName: "Marina", lastName: "Bossi", age: 32, documents: [
@@ -189,12 +187,12 @@ test("Check delete cascade", async () => {
 	})
 
 	let users = await rep.execute({ type: orm.Actions.FIND, payload: { where: { firstName: "Marina" }} })
-	await rep.execute({ type: RepoRestActions.DELETE, payload: users[0].id})
+	await rep.execute({ type: orm.RepoRestActions.DELETE, payload: users[0].id})
 
 	users = await rep.execute({ type: orm.Actions.FIND, payload: { where: { firstName: "Marina" }} })
 	expect(users.length).toBe(0)
 
-	rep = new PathFinder(root).getNode<orm.repo>("/typeorm/doc")
-	let docs = await rep.execute({ type: RepoRestActions.ALL})
+	rep = root.nodeByPath<orm.repo>("/typeorm/doc")!
+	let docs = await rep.execute({ type: orm.RepoRestActions.ALL})
 	expect(docs.length).toBe(1)
 })

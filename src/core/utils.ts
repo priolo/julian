@@ -6,11 +6,11 @@ import { obj } from "@priolo/jon-utils"
 /**
  * Cicla ricorsivamente tutti i nodi e chiama per ognuno il "callback"
  */
-export async function nodeForeach(nodes: INode | INode[], callback: (n: INode) => Promise<void>): Promise<void> {
+export async function nodeForeach<T extends INode>(nodes: INode | INode[], callback: (n: T) => Promise<void>): Promise<T> {
 	if (nodes == null) return
 	if (!Array.isArray(nodes)) nodes = [nodes]
 	for (const node of nodes) {
-		await callback(node)
+		await callback(node as T)
 		await nodeForeach(node.children, callback)
 	}
 }
@@ -29,6 +29,28 @@ export function nodeFind<T extends INode>(nodes: INode | INode[], callback: (n: 
 	}
 	return null
 }
+
+/**
+ * cicla ricorsivamente tutti i nodi e chiama per ognuno il "callback"
+ * restituisce tutti i nodi per cui il callback restituisce true
+ */
+export function nodesFind<T extends INode>(nodes: INode | INode[], callback: (n: T) => boolean): T[] {
+	const result: T[] = []
+	if (nodes == null) return result
+	if (!Array.isArray(nodes)) nodes = [nodes]
+	
+	for (const node of nodes) {
+		if (callback(node as T)) {
+			result.push(node as T)
+		}
+		const childResults = nodesFind(node.children, callback)
+		result.push(...childResults)
+	}
+	
+	return result
+}
+
+
 
 /**
  * Cicla tutti i parent del node e per ognuno chiama il "callback"  
@@ -62,7 +84,7 @@ export function nodePath(node: INode): string {
 }
 
 /**
- * restituisco un ggetto che rappresenta la struttura di un NODE
+ * restituisco un oggetto che rappresenta la struttura di un NODE
  */
 export function nodeToStruct(node: INode | null): NodeStruct {
 	if (!node) return null

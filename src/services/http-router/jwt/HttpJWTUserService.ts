@@ -1,10 +1,12 @@
 import { Request, Response, Router } from "express"
 import { Bus } from "../../../core/path/Bus.js"
 import * as jwtNs from "../../jwt/index.js"
-import { HttpRouterServiceBase } from "../HttpRouterServiceBase.js"
+import { HttpRouterServiceBase, HttpRouterServiceBaseConf } from "../HttpRouterServiceBase.js"
 import { CookieStrategy, RouteJWTUserActions } from "./utils.js"
 
 
+
+export type HttpJWTUserServiceConf = Partial<HttpJWTUserService['stateDefault']> & { class: "http-router/jwt", children?: HttpRouterServiceBaseConf[] }
 
 /**
  * middleware 
@@ -21,9 +23,18 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
              * nella "Request" express che contiene il PAYLOAD
              */
             payloadPropertyName: "jwtPayload",
-            // la path del jwt che si occupa di codificare/decodificare
+            /** 
+             * la path del jwt che si occupa di codificare/decodificare
+             */
             jwt: "",                    // path-jwt:request
+            /**
+             * Strategia da utilizzare per inserire/estrarre il token
+             */
             strategy: CookieStrategy,   // strategia da attuare per il login
+            /**
+             * 
+             */
+            disabled: false,
         }
     }
 
@@ -40,6 +51,9 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
 
         router.use(async (req: Request, res: Response, next) => {
             const { jwt, strategy } = this.state
+
+            // se è disabilitato non fa nulla
+            if ( this.state.disabled ) return next()
 
             // prelevo il token in base alla strategia scelta
             const token = await strategy.getToken(req)

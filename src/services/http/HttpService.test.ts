@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import path from "path";
 import { fileURLToPath } from "url";
-import { http as httpNs, httpRouter, PathFinder, RootService } from "../../index.js";
+import { http as httpNs, httpRouter, RootService } from "../../index.js";
 import { getFreePort } from "../ws/utils.js";
 
 
@@ -38,7 +38,7 @@ describe("HTTP SERVICE", () => {
 		// quindi qui ho il `RootService` con un solo `child` di tipo `http`
 		// aperto su una porta libera.
 		// infatti lo cerco e lo trovo
-		const http = new PathFinder(root).getNode<httpNs.Service>("/http")
+		const http = root.nodeByPath<httpNs.Service>("/http")!
 		expect(http instanceof httpNs.Service).toBeTruthy()
 		expect(http.state.port).toBe(PORT)
 
@@ -102,6 +102,29 @@ describe("HTTP SERVICE", () => {
 		expect(response.data)
 			.toEqual("<body><div>Item: </div><div>Item: </div><div>Item: </div></body>")
 
+	})
+
+
+	test("raw", async () => {
+
+		await RootService.Start([
+			<httpNs.conf>{
+				class: "http",
+				port: PORT,
+				children: [
+					<httpRouter.conf>{
+						class: "http-router",
+						routers: [
+							{ method: (req, res, next) => res.send("HELLO WORLD") }
+						],
+					},
+				]
+			}
+		])
+
+		const response = await axiosIstance.get('/');
+
+		expect(response.data).toEqual("HELLO WORLD")
 	})
 
 })

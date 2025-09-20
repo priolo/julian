@@ -10,7 +10,7 @@ import * as typeormNs from "../index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-@Entity()
+@Entity("user")
 export class User {
 	@PrimaryGeneratedColumn()
 	id: number;

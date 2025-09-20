@@ -4,8 +4,6 @@ import { EntitySchemaOptions } from "typeorm/entity-schema/EntitySchemaOptions.j
 import { fileURLToPath } from 'url';
 import { RootService } from "../../../core/RootService.js";
 import { Bus } from "../../../core/path/Bus.js";
-import { PathFinder } from "../../../core/path/PathFinder.js";
-import { RepoStructActions } from "../../../core/service/utils.js";
 import * as typeormNs from "../index.js";
 
 
@@ -81,7 +79,7 @@ beforeAll(async () => {
 	})
 
 	await new Bus(root, "/typeorm/messages").dispatch({
-		type: RepoStructActions.SEED,
+		type: typeormNs.RepoStructActions.SEED,
 		payload: [
 			{ text: "message 1", x: 1, y: 2 },
 			{ text: "message 2", x: 5, y: 7 },
@@ -100,7 +98,7 @@ afterAll(async () => {
 })
 
 test("Find item with WHERE", async () => {
-	const rep = new PathFinder(root).getNode<typeormNs.repo>("/typeorm/messages")
+	const rep = root.nodeByPath<typeormNs.repo>("/typeorm/messages")!
 
 	let results
 

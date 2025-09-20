@@ -7,10 +7,11 @@ import fs from "fs"
 import http, { Server } from "http"
 import https, { ServerOptions } from "https"
 import { ServiceBase } from "../../core/ServiceBase.js"
-import { HttpRouterServiceConf } from "../http-router/HttpRouterService.js"
+import { HttpRouterService, HttpRouterServiceConf } from "../http-router/HttpRouterService.js"
 import { SocketServerConf } from "../ws/SocketServerService.js"
 import { IHttpRouter } from "./utils.js"
 import { TypeLog } from "../../core/types.js"
+import { nodeForeach, nodesFind } from "src/core/utils.js"
 
 
 
@@ -58,6 +59,10 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 				@link https://nodejs.org/api/https.html#httpscreateserveroptions-requestlistener
 			*/
 			https: <ServerOptionsCustom>null,
+			/**
+			 * paths (con eventuali WILDCARDS) gestite come RAW-BODY e non come JSON
+			 */
+			rawPaths: <string[]>[],
 		}
 	}
 
@@ -69,7 +74,11 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 
 		this.app = express()
 		this.buildProperties()
-		this.app.use(express.json())	// middleware per contenuti json
+
+		// path da gestire con il raw-body e non JSON le inserisco prima di tutto
+		this.state.rawPaths.forEach(p => this.app.all(p, express.raw({ type: 'application/json' })))
+		// middleware per contenuti json
+		this.app.use(express.json())	
 		this.app.use(express.urlencoded({ extended: true }))
 		this.app.use(cookieParser())
 		this.buildRender()

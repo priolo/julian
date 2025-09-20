@@ -1,7 +1,7 @@
 {
 	"author": "Iorio Ivano <iorioivano@gmail.com>",
 	"name": "@priolo/julian",
-	"version": "0.6.1",
+	"version": "0.7.1",
 	"private": false,
 	"keywords": [
 		"nodejs",
@@ -56,7 +56,7 @@
 		"serve-index": "^1.9.1",
 		"slate": "^0.110.2",
 		"sqlite3": "^5.1.7",
-		"typeorm": "^0.3.24",
+		"typeorm": "^0.3.26",
 		"ws": "^8.18.0"
 	},
 	"devDependencies": {

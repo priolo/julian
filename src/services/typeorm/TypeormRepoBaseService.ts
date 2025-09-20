@@ -1,4 +1,4 @@
-import { Between, DataSource, Raw, Repository } from "typeorm";
+import { Between, DataSource, FindManyOptions, FindOneOptions, Raw, Repository } from "typeorm";
 import { ServiceBase } from "../../core/ServiceBase.js";
 import { IRepoStructActions, RepoStructActions } from "./types.js";
 import { TypeormService } from "./TypeormService.js";
@@ -25,8 +25,8 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	get executablesMap(): any {
 		return <IRepoStructActions<any>>{
 			...super.executablesMap,
-			[Actions.FIND]: async (query: any) => await this.find(query),
-			[Actions.FIND_ONE]: async (query: any) => await this.findOne(query),
+			[Actions.FIND]: async (query: FindManyOptions) => await this.find(query),
+			[Actions.FIND_ONE]: async (query: FindOneOptions) => await this.findOne(query),
 			[RepoStructActions.SEED]: async (seeds) => await this.seed(seeds ?? this.state.seeds),
 			[RepoStructActions.TRUNCATE]: async () => await this.truncate(),
 			[RepoStructActions.CLEAR]: async () => await this.clear(),
@@ -78,17 +78,17 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	 * @param query 
 	 * @returns 
 	 */
-	private async find(query: any): Promise<any[]> {
+	private async find(query: FindManyOptions): Promise<any[]> {
 		const repo = this.getRepo()
 		return await repo.find(this.normalizeQuery(query))
 	}
 
-	private async findOne(query: any): Promise<any> {
+	private async findOne(query: FindOneOptions): Promise<any> {
 		const repo = this.getRepo()
 		return await repo.findOne(this.normalizeQuery(query))
 	}
 
-	private normalizeQuery(query: any): any {
+	private normalizeQuery(query: FindManyOptions | FindOneOptions): FindManyOptions {
 		if (query.where) {
 			// permette di poter utilizzare le "Advanced Options"
 			// https://typeorm.io/find-options#advanced-options

@@ -1,15 +1,15 @@
 
 import { LOG_TYPE, log } from "@priolo/jon-utils";
 import { Request, Response, Router } from "express";
-import { HttpRouterServiceBase } from "./HttpRouterServiceBase.js";
 import { IHttpRouter } from "../http/utils.js";
+import { HttpRouterServiceBase } from "./HttpRouterServiceBase.js";
 
 
 
-export type HttpRouterServiceConf = Partial<HttpRouterService['stateDefault']> 
-	& { 
-		class: "http-router" | (new (...args: any[]) => HttpRouterService), 
-		children?: HttpRouterServiceConf[] 
+export type HttpRouterServiceConf = Partial<HttpRouterService['stateDefault']>
+	& {
+		class: "http-router" | (new (...args: any[]) => HttpRouterService),
+		children?: HttpRouterServiceConf[]
 	}
 
 /**
@@ -79,7 +79,7 @@ export class HttpRouterService extends HttpRouterServiceBase {
 				})
 			}
 			(this.parent as IHttpRouter).use(routerDestroy, this.state.path);
-			
+
 		}
 		await super.onDestroy()
 	}
@@ -102,6 +102,10 @@ export type IRouteParam = {
 	 * metodo da chiamare quando invocato dal CLIENT
 	 * */
 	method: string | IRouteMethod,
+	/**
+	 * se true il body non è formattato ma viene mandato cosi' come lo legge
+	 */
+	isRaw?: boolean
 }
 
 /** 
