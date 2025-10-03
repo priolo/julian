@@ -2,7 +2,7 @@ import { Between, DataSource, FindManyOptions, FindOneOptions, Raw, Repository }
 import { ServiceBase } from "../../core/ServiceBase.js";
 import { IRepoStructActions, RepoStructActions } from "./types.js";
 import { TypeormService } from "./TypeormService.js";
-import { Actions } from "./utils.js";
+import { Actions } from "./types.js";
 
 
 
@@ -31,8 +31,8 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 			[RepoStructActions.TRUNCATE]: async () => await this.truncate(),
 			[RepoStructActions.CLEAR]: async () => await this.clear(),
 
-			[Actions.TRANSACTION_START]: async () => await this.transactionStart(),
-			[Actions.TRANSACTION_END]: async () => await this.transactionEnd(),
+			//[Actions.TRANSACTION_START]: async () => await this.transactionStart(),
+			//[Actions.TRANSACTION_END]: async () => await this.transactionEnd(),
 		}
 	}
 
@@ -63,11 +63,12 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 		return repo
 	}
 
-	// [II] da implementare
+	/** [II] NON FUNZIONA perche' non fanno riferimento alle singole operazioni prese da Repository */
 	private transactionStart() {
 		const repo = this.getRepo()
 		return repo.queryRunner.startTransaction()
 	}
+	/** [II] NON FUNZIONA perche' non fanno riferimento alle singole operazioni prese da Repository */
 	private transactionEnd() {
 		const repo = this.getRepo()
 		return repo.queryRunner.commitTransaction()
@@ -75,14 +76,18 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 
 	/**
 	 * Effettua una ricerca su questo REPO
-	 * @param query 
-	 * @returns 
+	 * e restituisce un array di risultati
 	 */
 	private async find(query: FindManyOptions): Promise<any[]> {
 		const repo = this.getRepo()
 		return await repo.find(this.normalizeQuery(query))
 	}
 
+	/**
+	 * Effettua una ricerca su questo REPO
+	 * e restituisce un singolo risultato
+	 * (o null se non trovato)
+	 */
 	private async findOne(query: FindOneOptions): Promise<any> {
 		const repo = this.getRepo()
 		return await repo.findOne(this.normalizeQuery(query))

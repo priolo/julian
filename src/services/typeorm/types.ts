@@ -1,8 +1,31 @@
 
+/**
+ * ACTION base typeorm
+ */
+export enum Actions {
+	/**
+	 * Ricerca con una query typeorm
+	 * https://typeorm.io/#/find-options
+	 */
+	FIND = "find",
+	FIND_ONE = "find-one",
 
+	ALL = "all",
+	GET_BY_ID = "getById",
+	SAVE = "save",
+	DELETE = "delete",
+
+	/**
+	 * https://orkhan.gitbook.io/typeorm/docs/transactions#using-queryrunner-to-create-and-control-state-of-single-database-connection
+	 * [II] Not work because not refer to same repository operations
+	 */
+	TRANSACTION_START = "transaction-start",
+	TRANSACTION_END = "transaction-end",
+	TRANSACTION_ROLLBACK = "transaction-rollback"
+}
 
 /**
- * ACTION per oggetti REPO-BASE
+ * ACTION for services REPO-BASE
  */
 export enum RepoStructActions {
 	/** permette di specificare un array di action dirette al repository */
@@ -14,36 +37,18 @@ export enum RepoStructActions {
 }
 
 /**
- * identifica un set di DISPATCH per un oggetto REPO
- * per esempio "TypeormRepoBaseService"
- */
-export interface IRepoStructActions<T> {
-	[RepoStructActions.SEED]: (values: T[]) => Promise<any[]>;
-}
-
-/**
- * ACTIONS per oggetti REPO-REST
- * che si possono fare ad un "IRepoRestDispatch"
+ * @deprecated
+ * 
+ * ACTIONS for services REPO-REST
+ * which that are do to a "IRepoRestDispatch"
+ * 
+ * Use Actions instead
  */
 export enum RepoRestActions {
 	ALL = "all",
 	GET_BY_ID = "getById",
 	SAVE = "save",
 	DELETE = "delete"
-}
-
-/**
- * identifica un set di DISPATCH per un oggetto REST
- * adatto all'oggetto "TypeormRepoService"
- */
-export interface IRepoRestDispatch<T> {
-	[RepoRestActions.ALL]: () => Promise<T[]>;
-
-	[RepoRestActions.GET_BY_ID]: (id: string | number) => Promise<T>;
-
-	[RepoRestActions.SAVE]: (entity: any) => Promise<T>;
-
-	[RepoRestActions.DELETE]: (id: string | number) => Promise<any>;
 }
 
 /**
@@ -54,4 +59,26 @@ export enum RepoTreeActions {
 	GET_ROOTS = "get-roots"
 }
 
-//#endregion
+
+
+/**
+ * identifica un set di DISPATCH per un oggetto REPO
+ * per esempio "TypeormRepoBaseService"
+ */
+export interface IRepoStructActions<T> {
+	[RepoStructActions.SEED]: (values: T[]) => Promise<any[]>;
+}
+
+/**
+ * identifica un set di DISPATCH per un oggetto REST
+ * adatto all'oggetto "TypeormRepoService"
+ */
+export interface IRepoRestDispatch<T> {
+	[Actions.ALL]: () => Promise<T[]>;
+
+	[Actions.GET_BY_ID]: (id: string | number) => Promise<T>;
+
+	[Actions.SAVE]: (entity: any) => Promise<T>;
+
+	[Actions.DELETE]: (id: string | number) => Promise<any>;
+}

@@ -1,7 +1,7 @@
 {
 	"author": "Iorio Ivano <iorioivano@gmail.com>",
 	"name": "@priolo/julian",
-	"version": "0.7.1",
+	"version": "0.8.0",
 	"private": false,
 	"keywords": [
 		"nodejs",
@@ -16,16 +16,12 @@
 		"type": "git",
 		"url": "https://github.com/priolo/typexpress.git"
 	},
-
-
 	"type": "module",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"files": [
 		"dist"
 	],
-
-	
 	"scripts": {
 		"build": "tsc",
 		"build-watch": "tsc -w",
@@ -57,7 +53,9 @@
 		"slate": "^0.110.2",
 		"sqlite3": "^5.1.7",
 		"typeorm": "^0.3.26",
-		"ws": "^8.18.0"
+		"ws": "^8.18.0",
+		"nodemailer": "^7.0.6",
+		"email-check": "^1.1.0"
 	},
 	"devDependencies": {
 		"@tsconfig/node22": "^22.0.0",

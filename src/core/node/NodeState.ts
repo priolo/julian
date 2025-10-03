@@ -16,7 +16,7 @@ export abstract class NodeState extends Node {
 
 	constructor(name?: string, state = {}) {
 		super(name)
-		this._state = {
+		this.state = {
 			...this.stateDefault,
 			...state
 		}
@@ -43,25 +43,31 @@ export abstract class NodeState extends Node {
 	/**
 	 * Stato attuale del nodo
 	 */
-	get state(): this['stateDefault'] & { [key: string]: any } {
-		return this._state
-	}
-	protected _state!: this['stateDefault'] & { [key: string]: any }
+	state: this['stateDefault'] & { [key: string]: any }
+	
 
 	/**
 	 * Modifica lo stato
 	 * si tratta sempre di un MERGE con lo stato precedente
 	 */
 	public setState(partialState: any, noEmit?: boolean): void {
-		if (this._state == partialState) return
-		const old = this._state
-		this._state = { ...this._state, ...partialState }
+		if (this.state == partialState) return
+		const old = this.state
+		this.state = { ...this.state, ...partialState }
 		if (noEmit) return
+		this.onStateChanged(old, this.state, partialState)
 		this.log(
 			NamesLog.STATE_CHANGED,
-			{ old, current: this._state, partial: partialState },
+			{ old, current: this.state, partial: partialState },
 			TypeLog.SYSTEM
 		)
+	}
+
+	/**
+	 * viene chiamato quando lo stato cambia
+	 */
+	protected onStateChanged(oldState: any, newState: any, partialState: any): void {
+		// da implementare nei figli
 	}
 
 	//#endregion

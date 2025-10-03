@@ -14,5 +14,4 @@ export {
 	TypeormRepoTreeService as repoTree,
 	IsNull
 }
-export * from "./utils.js"
 export * from "./types.js"

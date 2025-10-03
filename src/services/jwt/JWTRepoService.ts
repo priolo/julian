@@ -16,7 +16,7 @@ export class JWTRepoService extends ServiceBase {
 		}
 	}
 
-	get executablesMap(): any {
+	get executablesMap() {
 		return {
 			...super.executablesMap,
 			[Actions.ENCODE]: ({ payload, options }) => this.encode(payload, options),
