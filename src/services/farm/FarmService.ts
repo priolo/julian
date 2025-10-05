@@ -46,7 +46,14 @@ export default class FarmService extends Node {
                 }
                 return module.default
             } else {
-                const localPath = p.resolve(__dirname, "..", path)
+                let localPath = p.resolve(__dirname, "..", path)
+                // if (fs.existsSync(localPath) && fs.statSync(localPath).isDirectory()) {
+                //     localPath = p.join(localPath, "index.js")
+                // }
+                // If localPath doesn't have an extension, assume it's a directory and append index.js
+                if (!p.extname(localPath)) {
+                    localPath = p.join(localPath, "index.js")
+                }
                 module = await import(pathToFileURL(localPath).href)
             }
         } catch (error) {
@@ -97,11 +104,25 @@ export default class FarmService extends Node {
 }
 
 
+
+/**
+ * Divide una stringa in due parti in base al primo divisore trovato
+ * - se non trova il divisore restituisce [null, str] o [str, null] in base a null2
+ */
 function splitOne(str: string, div: string, null2: boolean = false): [string, string] {
     const index = str.indexOf(div)
     if (index == -1) return null2 ? [str, null] : [null, str]
     return [str.slice(0, index), str.slice(index + 1)]
 }
+
+/** 
+ * Get the runtime root path
+ */
+const getRuntimeRoot = () => {
+    return process.cwd();
+}
+
+
 
 function findProjectRoot(currentDir: string): string {
     const rootPath = p.parse(currentDir).root;
@@ -112,11 +133,6 @@ function findProjectRoot(currentDir: string): string {
         currentDir = p.dirname(currentDir);
     }
     return null;
-}
-
-// Get the runtime root path
-const getRuntimeRoot = () => {
-    return process.cwd();
 }
 
 // Or if you need the entry point directory
