@@ -5,6 +5,8 @@ import {HttpJWTUserService, HttpJWTUserServiceConf} from "./HttpJWTUserService.j
 export {
 	HttpJWTUserService as default,
 	HttpJWTUserService as Service,
+}
+export type {
 	HttpJWTUserServiceConf as conf,	
 }
 

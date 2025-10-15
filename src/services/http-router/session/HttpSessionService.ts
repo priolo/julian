@@ -27,6 +27,7 @@ export class HttpSessionService extends HttpRouterServiceBase {
             typeorm: null,
         }
     }
+    declare state: typeof this.stateDefault
 
     private store:any = null
 

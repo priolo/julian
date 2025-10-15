@@ -56,6 +56,7 @@ export class HttpUploadService extends HttpRouterServiceBase {
             onMenageSizeStrategy: RemoveOldFileStrategy,
         }
     }
+    declare state: typeof this.stateDefault
 
     protected onBuildRouter(): Router {
         const router = super.onBuildRouter()

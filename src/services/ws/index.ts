@@ -6,8 +6,10 @@ import { SocketRouteService, SocketRouteConf } from "./SocketRouteService.js"
 export {
 	SocketServerService as default,
 	SocketServerService as Service,
-	SocketServerConf as conf,
 	SocketRouteService as route,
+}
+export type {
+	SocketServerConf as conf,
 	SocketRouteConf,
 }
 

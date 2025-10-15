@@ -11,15 +11,17 @@ import { HttpSessionService } from "./session/HttpSessionService.js";
 export {
 	HttpRouterService as default,
 	HttpRouterService as Service,
-	HttpRouterServiceConf as conf,	
 
 	HttpRouterRestServiceBase as repoBase,
 	HttpRouterRestRepoService as repo,
-	HttpRouterRestRepoServiceConf as repoConf,
 
 	jwt,
 	HttpFsService as fs,
 	HttpUploadService as upload,
 	HttpSessionService as session,
+}
+export type {
+	HttpRouterServiceConf as conf,	
+	HttpRouterRestRepoServiceConf as repoConf,
 }
 

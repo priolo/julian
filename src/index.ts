@@ -1,5 +1,5 @@
 //#region CORE
-export { INode } from "./core/node/INode.js"
+export type { INode } from "./core/node/INode.js"
 export { Node } from "./core/node/Node.js"
 export { NodeConf } from "./core/node/NodeConf.js"
 export { NodeState } from "./core/node/NodeState.js"

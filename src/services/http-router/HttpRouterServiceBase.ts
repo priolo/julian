@@ -22,6 +22,7 @@ export abstract class HttpRouterServiceBase extends ServiceBase implements IHttp
 			path: "/",
 		}
 	}
+	declare state: typeof this.stateDefault
 
 	protected async onInit(): Promise<void> {
 		await super.onInit()

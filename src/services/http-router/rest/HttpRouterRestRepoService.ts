@@ -28,6 +28,7 @@ export class HttpRouterRestRepoService extends HttpRouterRestServiceBase {
             repository: "",
         }
     }
+    declare state: typeof this.stateDefault
 
     protected async getAll(): Promise<any[]> {
         const { repository } = this.state

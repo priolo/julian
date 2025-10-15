@@ -3,10 +3,15 @@ import { Bus } from "../../../core/path/Bus.js"
 import * as jwtNs from "../../jwt/index.js"
 import { HttpRouterServiceBase, HttpRouterServiceBaseConf } from "../HttpRouterServiceBase.js"
 import { CookieStrategy, RouteJWTUserActions } from "./utils.js"
+import { HttpRouterServiceConf } from "../HttpRouterService.js"
 
 
 
-export type HttpJWTUserServiceConf = Partial<HttpJWTUserService['stateDefault']> & { class: "http-router/jwt", children?: HttpRouterServiceBaseConf[] }
+export type HttpJWTUserServiceConf = Partial<HttpJWTUserService['stateDefault']>
+    & {
+        class: "http-router/jwt",
+        children?: (HttpRouterServiceBaseConf | HttpRouterServiceConf)[]
+    }
 
 /**
  * middleware 
@@ -26,17 +31,22 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
             /** 
              * la path del jwt che si occupa di codificare/decodificare
              */
-            jwt: "",                    // path-jwt:request
+            jwt: null,
             /**
              * Strategia da utilizzare per inserire/estrarre il token
              */
-            strategy: CookieStrategy,   // strategia da attuare per il login
+            strategy: CookieStrategy,
             /**
-             * 
+             * in fase di dev potrebbe essere utile disabilitare il controllo
              */
             disabled: false,
+            /**
+             * non emette errori lascia proseguire senza valorizzare lo user
+             */
+            noError: false,
         }
     }
+    declare state: typeof this.stateDefault
 
     get executablesMap() {
         return {
@@ -50,22 +60,20 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
         const router = super.onBuildRouter()
 
         router.use(async (req: Request, res: Response, next) => {
-            const { jwt, strategy } = this.state
-
             // se è disabilitato non fa nulla
-            if ( this.state.disabled ) return next()
+            if (this.state.disabled) return next()
+            const { jwt, strategy } = this.state
 
             // prelevo il token in base alla strategia scelta
             const token = await strategy.getToken(req)
 
-            // se non c'e' il token emetto un errore
-            if (!token) return res.sendStatus(401)
+            // se c'e' decodifico il jwt
+            const payload = !!token
+                ? await new Bus(this, jwt).dispatch({ type: jwtNs.Actions.DECODE, payload: token })
+                : null
 
-            // decodifico il jwt
-            const payload = await new Bus(this, jwt)
-                .dispatch({ type: jwtNs.Actions.DECODE, payload: token })
             // se non sono riusito a decodificarlo ... errore!
-            if (!payload) return res.sendStatus(401)
+            if (!payload && !this.state.noError) return res.sendStatus(401)
 
             // inserisco il payload nel messaggio request e continuo nei router express
             req[this.state.payloadPropertyName] = payload

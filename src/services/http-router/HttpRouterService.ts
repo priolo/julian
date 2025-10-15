@@ -3,13 +3,14 @@ import { LOG_TYPE, log } from "@priolo/jon-utils";
 import { Request, Response, Router } from "express";
 import { IHttpRouter } from "../http/utils.js";
 import { HttpRouterServiceBase } from "./HttpRouterServiceBase.js";
+import { HttpJWTUserServiceConf } from "./jwt/HttpJWTUserService.js";
 
 
 
 export type HttpRouterServiceConf = Partial<HttpRouterService['stateDefault']>
 	& {
 		class: "http-router" | (new (...args: any[]) => HttpRouterService),
-		children?: HttpRouterServiceConf[]
+		children?: (HttpRouterServiceConf | HttpJWTUserServiceConf)[]
 	}
 
 /**
@@ -32,6 +33,7 @@ export class HttpRouterService extends HttpRouterServiceBase {
 			routers: <IRouteParam[]>[]
 		}
 	}
+	declare state: typeof this.stateDefault
 
 
 	protected onBuildRouter(): Router {

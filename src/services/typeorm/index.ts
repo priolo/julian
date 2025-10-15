@@ -8,10 +8,12 @@ import { IsNull } from "typeorm";
 export {
 	TypeormService as default,
 	TypeormService as Service,
-	TypeormServiceConf as conf,
 
 	TypeormRepoService as repo,
 	TypeormRepoTreeService as repoTree,
 	IsNull
+}
+export type {
+	TypeormServiceConf as conf,
 }
 export * from "./types.js"

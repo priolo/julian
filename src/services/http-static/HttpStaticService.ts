@@ -41,6 +41,7 @@ export class HttpStaticService extends HttpRouterServiceBase {
 			}
 		}
 	}
+	declare state: typeof this.stateDefault
 
 	protected async onInit(): Promise<void> {
 		const { dir, path } = this.state

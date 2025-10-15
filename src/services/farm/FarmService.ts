@@ -1,13 +1,12 @@
 import fs from 'fs';
-import p, { dirname } from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
+import p from 'path';
+import { pathToFileURL, fileURLToPath } from 'url';
 import { INode } from "../../core/node/INode.js";
 import { Node } from "../../core/node/Node.js";
 import { NodeConf } from "../../core/node/NodeConf.js";
 
-
-
-const __dirname = p.dirname(fileURLToPath(import.meta.url));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = p.dirname(__filename);
 //const nodeModulesPath = p.resolve(__dirname, '../../node_modules');
 
 /**
@@ -124,22 +123,22 @@ const getRuntimeRoot = () => {
 
 
 
-function findProjectRoot(currentDir: string): string {
-    const rootPath = p.parse(currentDir).root;
-    while (currentDir !== rootPath) {
-        if (fs.existsSync(p.join(currentDir, 'package.json'))) {
-            return currentDir;
-        }
-        currentDir = p.dirname(currentDir);
-    }
-    return null;
-}
+// function findProjectRoot(currentDir: string): string {
+//     const rootPath = p.parse(currentDir).root;
+//     while (currentDir !== rootPath) {
+//         if (fs.existsSync(p.join(currentDir, 'package.json'))) {
+//             return currentDir;
+//         }
+//         currentDir = p.dirname(currentDir);
+//     }
+//     return null;
+// }
 
-// Or if you need the entry point directory
-const getEntryPointDir = () => {
-    if (process.mainModule) {
-        return dirname(process.mainModule.filename);
-    }
-    // Fallback for ESM
-    return dirname(fileURLToPath(import.meta.url));
-}
+// // Or if you need the entry point directory
+// const getEntryPointDir = () => {
+//     if (process.mainModule) {
+//         return dirname(process.mainModule.filename);
+//     }
+//     // Fallback for ESM
+//     return dirname(fileURLToPath(import.meta.url));
+// }
