@@ -5,14 +5,37 @@
 export enum Actions {
 	/**
 	 * Ricerca con una query typeorm
-	 * https://typeorm.io/#/find-options
+	 * https://typeorm.io/docs/working-with-entity-manager/find-options
+	 * ```
+	 * payload: FindManyOptions<T> // criterio di ricerca (la clausola WHERE)
+	 * ```
+	 * returns: T[]
 	 */
 	FIND = "find",
 	FIND_ONE = "find-one",
+	FIND_AND_COUNT = "find-and-count",
 
 	ALL = "all",
 	GET_BY_ID = "getById",
+	/**
+	 * CREATE/UPDATE un entity
+	 * https://typeorm.io/docs/working-with-entity-manager/repository-api
+	 * ```
+	 * payload: Partial<entity> | Partial<entity>[]
+	 * ```
+	 */
 	SAVE = "save",
+	/**
+	 * Aggiorna sulla base di una selection  
+	 * https://typeorm.io/docs/working-with-entity-manager/repository-api/  
+	 * ```
+	 * payload: { 
+	 *    criteria: FindOptionsWhere<T> | FindOptionsWhere<T>[], 
+	 *    partialEntity: QueryDeepPartialEntity<T> 
+	 * }
+	 * ```
+	 */
+	UPDATE = "update",
 	DELETE = "delete",
 
 	/**

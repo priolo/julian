@@ -1,6 +1,7 @@
 import { FindManyOptions } from "typeorm";
 import { TypeormRepoBaseService } from "./TypeormRepoBaseService.js";
-import { IRepoRestDispatch, RepoRestActions } from "./types.js";
+import { Actions, IRepoRestDispatch, RepoRestActions } from "./types.js";
+import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity.js";
 
 
 
@@ -23,19 +24,23 @@ export class TypeormRepoService extends TypeormRepoBaseService {
 	get executablesMap(): any {
 		return <IRepoRestDispatch<any>>{
 			...super.executablesMap,
-			[RepoRestActions.SAVE]: async (entity) => {
+			[Actions.SAVE]: async (entity) => {
 				const repo = this.getRepo()
 				return await repo.save(entity);
 			},
-			[RepoRestActions.ALL]: async (payload:FindManyOptions) => {
+			[Actions.UPDATE]: async (payload: { criteria: any, partial: QueryDeepPartialEntity<any> }) => {
+				const repo = this.getRepo()
+				return await repo.update(payload.criteria, payload.partial);
+			},
+			[Actions.ALL]: async (payload: FindManyOptions) => {
 				const repo = this.getRepo()
 				return await repo.find(payload ?? this.state.findOptions);
 			},
-			[RepoRestActions.GET_BY_ID]: async (id) => {
+			[Actions.GET_BY_ID]: async (id) => {
 				const repo = this.getRepo()
 				return await repo.findOne({ where: { id } }) ?? null;
 			},
-			[RepoRestActions.DELETE]: async (id) => {
+			[Actions.DELETE]: async (id) => {
 				const repo = this.getRepo()
 				//await this.connection.query('PRAGMA foreign_keys=OFF');
 				const ret = await repo.delete(id);

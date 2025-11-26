@@ -21,7 +21,10 @@ export class LogService extends ServiceBase {
 			include: <TypeLog[]>null,
 			/** Se devo effettuare un log su stdout */
 			stdout: true,
-			/** evento su ricezione di un LOG da parte del parent*/
+			/** 
+			 * evento su ricezione di un LOG da parte del parent
+			 * se restituisce `false` non printa il log
+			 * */
 			onParentLog: <((log: ILog) => void | boolean) | null>null,
 		}
 	}

@@ -65,6 +65,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 			rawPaths: <string[]>[],
 		}
 	}
+	declare state: typeof this.stateDefault
 
 	/**
 	 * Creo l'instanza del server EXPRESS collegandola ai plugin

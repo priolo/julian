@@ -27,6 +27,7 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 			...super.executablesMap,
 			[Actions.FIND]: async (query: FindManyOptions) => await this.find(query),
 			[Actions.FIND_ONE]: async (query: FindOneOptions) => await this.findOne(query),
+			[Actions.FIND_AND_COUNT]: async (query: FindManyOptions) => await this.findAndCount(query),
 			[RepoStructActions.SEED]: async (seeds) => await this.seed(seeds ?? this.state.seeds),
 			[RepoStructActions.TRUNCATE]: async () => await this.truncate(),
 			[RepoStructActions.CLEAR]: async () => await this.clear(),
@@ -91,6 +92,15 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	private async findOne(query: FindOneOptions): Promise<any> {
 		const repo = this.getRepo()
 		return await repo.findOne(this.normalizeQuery(query))
+	}
+
+	/**
+	 * Effettua una ricerca su questo REPO
+	 * e restituisce un array di risultati e il conteggio totale
+	 */
+	private async findAndCount(query: FindManyOptions): Promise<[any[], number]> {
+		const repo = this.getRepo()
+		return await repo.findAndCount(this.normalizeQuery(query))
 	}
 
 	private normalizeQuery(query: FindManyOptions | FindOneOptions): FindManyOptions {

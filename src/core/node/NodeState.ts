@@ -37,6 +37,8 @@ export abstract class NodeState extends Node {
 			name: <string>null,
 			/** chiamato su qualunque LOG emesso da questo NODE */
 			onLog: <(this: NodeState, log: ILog) => void>null,
+			/** TODO: il nodo è creato ma è disabilitato */
+			disabled: false,
 		}
 	}
 
