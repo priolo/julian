@@ -1,7 +1,7 @@
 {
 	"author": "Iorio Ivano <iorioivano@gmail.com>",
 	"name": "@priolo/julian",
-	"version": "0.8.4",
+	"version": "0.8.5",
 	"private": false,
 	"keywords": [
 		"nodejs",
