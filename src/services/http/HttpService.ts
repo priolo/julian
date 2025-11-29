@@ -96,8 +96,9 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		this.app.use((err: Error, req: Request, res: Response, next) => {
 			// se c'e' un gestore di errore come figlio inoltra l'errore pure li
 			this.log(`HttpService:error`, err, TypeLog.ERROR)
+			res.status(500).json({ error: err?.message ?? "Internal Server Error" });
 			// continua il discorso...
-			next(err)
+			//next(err)
 		})
 	}
 

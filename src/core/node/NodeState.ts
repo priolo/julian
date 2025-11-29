@@ -139,6 +139,7 @@ export abstract class NodeState extends Node {
 			return fnc(action.payload, action.sender, this)
 		} catch (error) {
 			this.log(NamesLog.ERR_EXECUTE, error, TypeLog.ERROR)
+			throw error
 		}
 	}
 

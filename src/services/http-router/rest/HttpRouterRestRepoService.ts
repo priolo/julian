@@ -1,5 +1,5 @@
 import { Bus } from "../../../core/path/Bus.js"
-import { RepoRestActions } from "../../typeorm/types.js"
+import { Actions, RepoRestActions } from "../../typeorm/types.js"
 import { HttpRouterServiceConf } from "../HttpRouterService.js"
 import { HttpRouterRestServiceBase } from "./HttpRouterRestServiceBase.js"
 
@@ -33,14 +33,14 @@ export class HttpRouterRestRepoService extends HttpRouterRestServiceBase {
     protected async getAll(): Promise<any[]> {
         const { repository } = this.state
         return await new Bus(this, repository).dispatch({
-            type: RepoRestActions.ALL
+            type: Actions.ALL
         })
     }
 
     protected async getById(id: string): Promise<any> {
         const { repository } = this.state
         return await new Bus(this, repository).dispatch({
-            type: RepoRestActions.GET_BY_ID,
+            type: Actions.GET_BY_ID,
             payload: id
         })
     }
@@ -48,7 +48,7 @@ export class HttpRouterRestRepoService extends HttpRouterRestServiceBase {
     protected async save(entity: any): Promise<any> {
         const { repository } = this.state
         return await new Bus(this, repository).dispatch({
-            type: RepoRestActions.SAVE,
+            type: Actions.SAVE,
             payload: entity
         })
     }
@@ -56,7 +56,7 @@ export class HttpRouterRestRepoService extends HttpRouterRestServiceBase {
     protected async delete(id: string): Promise<any> {
         const { repository } = this.state
         return await new Bus(this, repository).dispatch({
-            type: RepoRestActions.DELETE,
+            type: Actions.DELETE,
             payload: id
         })
     }

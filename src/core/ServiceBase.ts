@@ -47,13 +47,13 @@ export class ServiceBase extends NodeConf {
 	 * @override 
 	 */
 	async execute(action: IAction): Promise<any> {
-		try {
+		//try {
 			const res = await super.execute(action)
 			this.log(NamesLog.NODE_EXECUTE, action)
 			return res
-		} catch (error) {
-			this.log(NamesLog.ERR_EXECUTE, error, TypeLog.ERROR)
-		}
+		// } catch (error) {
+		// 	this.log(NamesLog.ERR_EXECUTE, error, TypeLog.ERROR)
+		// }
 	}
 
 	/**

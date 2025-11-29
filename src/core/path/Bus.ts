@@ -22,10 +22,11 @@ export class Bus {
 	private bufferWait: IAction[] = []
 
 	/**
-	 * Consegna un "Action" al suo destinatario partendo dal nodo "this.sender"
+	 * Consegna un ACTION al suo destinatario partendo dal nodo "this.sender"
 	 * @param action 
 	 */
 	async dispatch<T=any>(action: IAction | string): Promise<T> {
+		
 		if (!action) throw "errore parametro action"
 		if (typeof action == "string") action = { type: action } as IAction
 		const dest:NodeState = this.sender.nodeByPath(this.path)
@@ -51,8 +52,8 @@ export class Bus {
 	}
 
 	/**
-	 * try to send an action
-	 * if it fails, try again
+	 * Prova a eseguire l'ACTION
+	 * se c'e' una gestione dell ERRORE con reattempt riprova il numero di volte specificato
 	 */
 	private async tryDispatch(dest: NodeState, action: IAction, attempt: number = 0): Promise<any> {
 		try {
