@@ -9,7 +9,7 @@ import https, { ServerOptions } from "https"
 import { ServiceBase } from "../../core/ServiceBase.js"
 import { HttpRouterService, HttpRouterServiceConf } from "../http-router/HttpRouterService.js"
 import { SocketServerConf } from "../ws/SocketServerService.js"
-import { IHttpRouter } from "./utils.js"
+import { IHttpRouter } from "./types.js"
 import { TypeLog } from "../../core/types.js"
 import { nodeForeach, nodesFind } from "src/core/utils.js"
 

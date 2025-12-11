@@ -6,4 +6,6 @@ export type {
 	HttpServiceConf as conf,
 } from "./HttpService.js"
 
-export * from "./utils.js"
+export * from "./types.js"
+
+export { default as RateLimiter } from "./utils/RateLimiter.js";

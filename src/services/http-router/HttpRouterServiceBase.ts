@@ -1,7 +1,7 @@
 import cors from "cors";
 import express, { Router } from "express";
 import { ServiceBase } from "../../core/ServiceBase.js";
-import { IHttpRouter } from "../http/utils.js";
+import { IHttpRouter } from "../http/types.js";
 
 
 

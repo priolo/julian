@@ -31,7 +31,7 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
             /** 
              * la path del jwt che si occupa di codificare/decodificare
              */
-            jwt: null,
+            jwt: <string>null,
             /**
              * Strategia da utilizzare per inserire/estrarre il token
              */
@@ -62,14 +62,13 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
         router.use(async (req: Request, res: Response, next) => {
             // se è disabilitato non fa nulla
             if (this.state.disabled) return next()
-            const { jwt, strategy } = this.state
-
+            
             // prelevo il token in base alla strategia scelta
-            const token = await strategy.getToken(req)
+            const token = await this.state.strategy.getToken(req)
 
             // se c'e' decodifico il jwt
             const payload = !!token
-                ? await new Bus(this, jwt).dispatch({ type: jwtNs.Actions.DECODE, payload: token })
+                ? await new Bus(this, this.state.jwt).dispatch({ type: jwtNs.Actions.DECODE, payload: token })
                 : null
 
             // se non sono riusito a decodificarlo ... errore!

@@ -1,7 +1,7 @@
 
 import { LOG_TYPE, log } from "@priolo/jon-utils";
 import { Request, Response, Router } from "express";
-import { IHttpRouter } from "../http/utils.js";
+import { IHttpRouter } from "../http/types.js";
 import { HttpRouterServiceBase } from "./HttpRouterServiceBase.js";
 import { HttpJWTUserServiceConf } from "./jwt/HttpJWTUserService.js";
 
