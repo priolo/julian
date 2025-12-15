@@ -1,23 +1,23 @@
 
-import { LOG_TYPE, log } from "@priolo/jon-utils"
 import cookieParser from 'cookie-parser'
-import express, { Express, Request, Response, Router } from "express"
+import express, { Express, NextFunction, Request, Response, Router } from "express"
 import { engine as exphbs } from 'express-handlebars'
 import fs from "fs"
 import http, { Server } from "http"
 import https, { ServerOptions } from "https"
 import { ServiceBase } from "../../core/ServiceBase.js"
-import { HttpRouterService, HttpRouterServiceConf } from "../http-router/HttpRouterService.js"
+import { TypeLog } from "../../core/types.js"
+import { HttpRouterServiceConf } from "../http-router/HttpRouterService.js"
 import { SocketServerConf } from "../ws/SocketServerService.js"
 import { IHttpRouter } from "./types.js"
-import { TypeLog } from "../../core/types.js"
-import { nodeForeach, nodesFind } from "src/core/utils.js"
 
 
 
 export type HttpServiceConf = Partial<HttpService['stateDefault']>
 	& { class: "http", children?: Array<HttpRouterServiceConf | SocketServerConf> }
 //export type HttpServiceAct = HttpService['dispatchMap']
+
+type LoggingOptions = boolean & { body?: boolean; headers?: boolean };
 
 /**
  * Praticamente mantiene un instanza di un server "express"
@@ -46,7 +46,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 			 * opzioni di express:  
 			 * @link https://expressjs.com/en/4x/api.html#app.set
 			 */
-			options: <{ [key: string]: any }>null,
+			options:<{ [key: string]: any }>null,
 			/** 
 			 * se valorizzato creo un server `https`
 				@example
@@ -63,6 +63,14 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 			 * paths (con eventuali WILDCARDS) gestite come RAW-BODY e non come JSON
 			 */
 			rawPaths: <string[]>[],
+			/**
+			 * inserisce middleware per i log
+			 * false: nessun log
+			 * true: tutti i log
+			 * object: log selettivo
+			 * { method, body, header }
+			 */
+			log: <LoggingOptions>false,
 		}
 	}
 	declare state: typeof this.stateDefault
@@ -79,9 +87,12 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		// path da gestire con il raw-body e non JSON le inserisco prima di tutto
 		this.state.rawPaths.forEach(p => this.app.all(p, express.raw({ type: 'application/json' })))
 		// middleware per contenuti json
-		this.app.use(express.json())	
+		this.app.use(express.json())
 		this.app.use(express.urlencoded({ extended: true }))
 		this.app.use(cookieParser())
+		const loggerMw = this.createHttpLogger();
+		if (loggerMw) this.app.use(loggerMw);
+
 		this.buildRender()
 		this._server = this.buildServer()
 		await this.listenServer()
@@ -190,6 +201,22 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 	private buildProperties(): void {
 		if (!this.state.options) return
 		Object.entries(this.state.options).forEach(([key, value]) => this.app.set(key, value))
+	}
+
+	private createHttpLogger(): express.RequestHandler | null {
+		if (!this.state.log) return null
+
+		return (req: Request, res: Response, next: NextFunction) => {
+			let logData: any = { ip: req.ip }
+			if (this.state.log === true || this.state.log?.body === true) logData.body = req.body
+			if (this.state.log === true || this.state.log?.headers === true) logData.headers = req.headers;
+			this.log(
+				`HTTP ${req.method} ${req.originalUrl}`,
+				logData,
+				TypeLog.INFO
+			)
+			next()
+		}
 	}
 }
 

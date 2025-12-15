@@ -7,8 +7,9 @@ import { ILog, TypeLog } from "../../core/types.js";
 export type LogConf = Partial<LogService['stateDefault']> & { class: "log" }
 
 /**
- * Permette di gestire i log.. per esempio su console o su file
- * essenzialmente utilizza winstonjs
+ * Permette di gestire i log provenienti dal parent
+ * si mette in ascolto sugi eventi che arrivano al "parent node"
+ * e chiama l'evento onParentLog
  */
 export class LogService extends ServiceBase {
 

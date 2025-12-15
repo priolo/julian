@@ -1,7 +1,7 @@
 {
 	"author": "Iorio Ivano <iorioivano@gmail.com>",
 	"name": "@priolo/julian",
-	"version": "0.8.8",
+	"version": "0.8.9",
 	"private": false,
 	"keywords": [
 		"nodejs",
@@ -14,7 +14,7 @@
 	"homepage": "https://github.com/priolo/typexpress",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/priolo/typexpress.git"
+		"url": "git+https://github.com/priolo/typexpress.git"
 	},
 	"type": "module",
 	"main": "dist/index.js",
