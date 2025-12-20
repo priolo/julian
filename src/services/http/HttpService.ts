@@ -207,7 +207,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		if (!this.state.log) return null
 
 		return (req: Request, res: Response, next: NextFunction) => {
-			const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip
+			const ip = req?.headers?.['x-forwarded-for'] ?? req?.socket?.remoteAddress ?? req?.ip ?? "unknown"
 			let logData: any = { ip }
 			if (this.state.log === true || this.state.log?.body === true) logData.body = req.body
 			if (this.state.log === true || this.state.log?.headers === true) logData.headers = req.headers;
