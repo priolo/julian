@@ -45,15 +45,42 @@ export default class FarmService extends Node {
                 }
                 return module.default
             } else {
-                let localPath = p.resolve(__dirname, "..", path)
-                // if (fs.existsSync(localPath) && fs.statSync(localPath).isDirectory()) {
-                //     localPath = p.join(localPath, "index.js")
-                // }
-                // If localPath doesn't have an extension, assume it's a directory and append index.js
-                if (!p.extname(localPath)) {
-                    localPath = p.join(localPath, "index.js")
+                const basePath = p.resolve(__dirname, "..", path)
+                let resolvedPath: string | null = null
+
+                // 1. Se ha già un'estensione ed esiste, usalo
+                if (p.extname(basePath) && fs.existsSync(basePath)) {
+                    resolvedPath = basePath
                 }
-                module = await import(pathToFileURL(localPath).href)
+
+                // 2. Cerca come file (.ts, .js)
+                const extensions = ['.ts', '.js'] // Ordine di preferenza
+                if (!resolvedPath) {
+                    for (const ext of extensions) {
+                        const fileWithExt = basePath + ext
+                        if (fs.existsSync(fileWithExt)) {
+                            resolvedPath = fileWithExt
+                            break
+                        }
+                    }
+                }
+
+                // 3. Cerca come cartella (index.ts, index.js)
+                if (!resolvedPath) {
+                    for (const ext of extensions) {
+                        const indexFile = p.join(basePath, `index${ext}`)
+                        if (fs.existsSync(indexFile)) {
+                            resolvedPath = indexFile
+                            break
+                        }
+                    }
+                }
+
+                if (!resolvedPath) {
+                    throw new Error(`File service non trovato: ${basePath} (cercato con estensioni ${extensions.join(', ')})`)
+                }
+
+                module = await import(pathToFileURL(resolvedPath).href)
             }
         } catch (error) {
             throw new Error(`Failed to load module: ${error.message}`)

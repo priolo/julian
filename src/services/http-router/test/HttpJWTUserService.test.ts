@@ -6,7 +6,7 @@ import { RootService } from "../../../core/RootService.js";
 import { Bus } from "../../../core/path/Bus.js";
 import { getFreePort } from "../../ws/index.js";
 import * as jwt from "../jwt/index.js";
-import { RepoRestActions } from "../../typeorm/types.js";
+import { Actions } from "../../typeorm/types.js";
 
 
 
@@ -107,8 +107,8 @@ test("creazione", async () => {
 })
 
 test("crea due USER", async () => {
-	user1 = await new Bus(root, "/typeorm/user").dispatch({ type: RepoRestActions.SAVE, payload: { username: "priolo" } })
-	user2 = await new Bus(root, "/typeorm/user").dispatch({ type: RepoRestActions.SAVE, payload: { username: "zago" } })
+	user1 = await new Bus(root, "/typeorm/user").dispatch({ type: Actions.SAVE, payload: { username: "priolo" } })
+	user2 = await new Bus(root, "/typeorm/user").dispatch({ type: Actions.SAVE, payload: { username: "zago" } })
 	expect(user1).toBeDefined()
 	expect(user2).toBeDefined()
 })

@@ -1,5 +1,5 @@
 import { Bus } from "../../../core/path/Bus.js"
-import { Actions, RepoRestActions } from "../../typeorm/types.js"
+import { Actions } from "../../typeorm/types.js"
 import { HttpRouterServiceConf } from "../HttpRouterService.js"
 import { HttpRouterRestServiceBase } from "./HttpRouterRestServiceBase.js"
 

@@ -1,8 +1,9 @@
 import { Request } from "express"
+import { createServer, Server } from 'http'
 import url from 'url'
 import { WebSocket, WebSocketServer } from "ws"
-import { TypeLog } from "../../core/types.js"
 import { Bus } from "../../core/path/Bus.js"
+import { TypeLog } from "../../core/types.js"
 import * as http from "../http/index.js"
 import * as jwtNs from "../jwt/index.js"
 import { SocketCommunicator } from "./SocketCommunicator.js"
@@ -25,7 +26,10 @@ export class SocketServerService extends SocketCommunicator {
 			name: "ws-server",
 			autostart: true,
 			port: <number>null,
+			/** path dove sta il cod/dec jwt */
 			jwt: <string>null,
+			/** Nome del cookie da cui estrarre il token JWT (default: "jwt") */
+			cookieName: "jwt",
 			clients: <IClient[]>[],
 			onAuth: <(jwtPayload: string) => boolean>null,
 			path: <string>null,
@@ -44,6 +48,8 @@ export class SocketServerService extends SocketCommunicator {
 	 * Semplicemente il server WEB-SOCKET
 	 */
 	private server: WebSocketServer = null
+	private httpServer: Server = null
+	private wsToClient = new WeakMap<WebSocket, IClient>()
 
 	protected async onInit() {
 		await super.onInit()
@@ -81,10 +87,10 @@ export class SocketServerService extends SocketCommunicator {
 	private async buildServer(): Promise<void> {
 		return new Promise((res, rej) => {
 			if (!this.state.port) rej("no port")
-			this.server = new WebSocketServer(
-				{ port: this.state.port },
-				() => res()
-			)
+			this.httpServer = createServer()
+			this.server = new WebSocketServer({ noServer: true })
+			this.httpServer.on('upgrade', this.onUpgrade)
+			this.httpServer.listen(this.state.port, () => res())
 		})
 	}
 
@@ -92,17 +98,24 @@ export class SocketServerService extends SocketCommunicator {
 	 * Attacca il SERVER-WEB-SOCKET al SERVER-HTTP superiore
 	 */
 	private attachToServerHttp() {
-		const parentHttp = this.parent instanceof http.Service ? (<http.Service>this.parent).server : null
-		if (!parentHttp) throw new Error("non c'e' il server http")
-
+		this.httpServer = this.parent instanceof http.Service ? (<http.Service>this.parent).server : null
+		if (!this.httpServer) throw new Error("non c'e' il server http")
 		this.server = new WebSocketServer({ noServer: true })
-		parentHttp.on('upgrade', this.onUpgrade)
+		this.httpServer.on('upgrade', this.onUpgrade)
 	}
+
+	/**
+	 * Stacca il SERVER-WEB-SOCKET dal SERVER-HTTP superiore
+	 */
 	private detachToServerHttp() {
 		const parentHttp = this.parent instanceof http.Service ? (<http.Service>this.parent).server : null
 		if (!parentHttp) return
 		parentHttp.off('upgrade', this.onUpgrade)
 	}
+
+	/**
+	 * Gestisce la richiesta di upgrade a WebSocket
+	 */
 	private onUpgrade = async (request, socket, head) => {
 		let { path } = this.state
 		const params = getUrlParams(request)
@@ -111,13 +124,17 @@ export class SocketServerService extends SocketCommunicator {
 		const wsUrl = url.parse(request.url)
 		if (!path) path = ""
 		if (!path.startsWith("/")) path = `/${path}`
-		if (wsUrl.pathname != path) return
+		if (wsUrl.pathname != path) {
+			if (this.state.port) socket.destroy()
+			return
+		}
 
 		// controllo se c'e' un autentificazione da fare
-		let jwtPayload: any
+		let jwtPayload: any = null
 		if (this.state.jwt) {
-			jwtPayload = await this.getJwtPayload(params.token)
-			const response = this.state.onAuth ? this.state.onAuth.bind(this)(jwtPayload) : jwtPayload != null
+			const token = this.getTokenFromRequest(request, params)
+			jwtPayload = await this.getJwtPayload(token)
+			const response = this.state.onAuth ? this.state.onAuth.bind(this)(jwtPayload) : true
 			if (!response) {
 				socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
 				socket.destroy()
@@ -131,6 +148,28 @@ export class SocketServerService extends SocketCommunicator {
 		this.server.handleUpgrade(request, socket, head, (ws) => {
 			this.server.emit('connection', ws, request, jwtPayload)
 		})
+	}
+
+	/**
+	 * Estrae il token dalla richiesta (query param, header Authorization, cookie)
+	 */
+	private getTokenFromRequest(request: any, params: any): string {
+		let token = params.token
+		if (!token && request.headers['authorization']) {
+			const parts = request.headers['authorization'].split(' ')
+			if (parts.length == 2 && parts[0] == 'Bearer') {
+				token = parts[1]
+			}
+		}
+		if (!token && this.state.cookieName && request.headers.cookie) {
+			const cookies = request.headers.cookie.split(';').reduce((acc, cookie) => {
+				const [name, value] = cookie.trim().split('=')
+				if (name && value) acc[name] = value
+				return acc
+			}, {} as Record<string, string>)
+			token = cookies[this.state.cookieName]
+		}
+		return token
 	}
 
 	/**
@@ -151,10 +190,18 @@ export class SocketServerService extends SocketCommunicator {
 		if (!this.server) return
 		return new Promise<void>((res, rej) => {
 			this.server.close((err) => {
-				if (err) rej(err); else res()
+				if (this.state.port && this.httpServer) {
+					this.httpServer.close(() => {
+						this.httpServer = null
+						if (err) rej(err); else res()
+					})
+				} else {
+					if (err) rej(err); else res()
+				}
 			})
 			this.detachToServerHttp()
 			this.server = null
+			if (!this.state.port) this.httpServer = null
 		})
 	}
 
@@ -172,12 +219,13 @@ export class SocketServerService extends SocketCommunicator {
 				jwtPayload
 			}
 			cws.binaryType = "nodebuffer"
+			this.wsToClient.set(cws, client)
 			this.buildEventsClient(cws)
-			this.addClient(client) //this.updateClients()
+			this.addClient(client)
 			this.onConnect(client)
 		})
 
-		this.server.on("error", (error) => { console.log("server:error:"); /*debugger*/ })
+		this.server.on("error", (error) => { console.log("server:error:", error) })
 		//this.server.on("close", (cws: WebSocket) => { console.log("server:close:"); /*debugger*/ })
 	}
 
@@ -198,7 +246,7 @@ export class SocketServerService extends SocketCommunicator {
 			}
 		})
 
-		cws.on('error', (error) => { debugger })
+		cws.on('error', (error) => { this.log("ws:client:error", error, TypeLog.ERROR) })
 
 		cws.on('close', (code: number, reason: string) => {
 			const client = this.findClientByCWS(cws)
@@ -230,10 +278,7 @@ export class SocketServerService extends SocketCommunicator {
 	 * Restituisce un CLIENT-JSON tramite CLIENT-WEB-SOCKET
 	 */
 	private findClientByCWS(cws: WebSocket) {
-		const { clients } = this.state
-		const socket = (cws as any)._socket
-		const client = clients.find(client => clientIsEqual(client, socket))
-		return client
+		return this.wsToClient.get(cws)
 	}
 
 	/**
