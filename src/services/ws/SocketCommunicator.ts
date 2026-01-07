@@ -1,3 +1,4 @@
+import { TypeLog } from "src/core/types.js"
 import { ServiceBase } from "../../core/ServiceBase.js"
 import { IClient, SocketLog, SocketRouteActions } from "./types.js"
 
@@ -33,31 +34,35 @@ export abstract class SocketCommunicator extends ServiceBase {
 	}
 
 	/**
-	 * c'e' una NUOVA connessione da un client
+	 * Un CLIENT si connette
 	 */
 	onConnect(client: IClient): void {
 		if (!client) return
 		//this.state.onConnect?.bind(this)(client)
-		this.log( SocketLog.OPEN, { client })
+		this.log(SocketLog.OPEN, { client })
 		for (const node of this.children) {
 			(<SocketCommunicator>node)?.onConnect?.(client)
 		}
 	}
 
 	/**
-	 * un client si disconnette
+	 * Un CLIENT si disconnette
 	 */
 	onDisconnect(client: IClient) {
-		if (!client) return
+		if (!client || !this.children) return
 		//this.state.onDisconnect?.bind(this)(client)
 		this.log(SocketLog.CLOSE, { client })
 		for (const node of this.children) {
-			(<SocketCommunicator>node)?.onDisconnect?.(client)
+			try {
+				(<SocketCommunicator>node)?.onDisconnect?.(client)
+			} catch (error) {
+				this.log(`Error onDisconnect in child node: ${error}`, TypeLog.ERROR)
+			}
 		}
 	}
 
 	/**
-	 * Richiamato quando c'e' un MESSAGE dal CLIENT
+	 * Un CLIENT manda un MESSAGE
 	 */
 	async onMessage(client: IClient, message: string) {
 		if (!client || !message) return
@@ -78,7 +83,7 @@ export abstract class SocketCommunicator extends ServiceBase {
 	}
 
 	/**
-	 * Invia un MESSAGE a tutti i CLIENT
+	 * Invia un MESSAGE a tutti i CLIENT della CHAT
 	 */
 	sendToAll(message: any) {
 		const clients = this.getClients()
