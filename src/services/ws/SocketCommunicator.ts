@@ -75,6 +75,8 @@ export abstract class SocketCommunicator extends ServiceBase {
 
 	/**
 	 * Invia un MESSAGE ad un CLIENT
+	 * @param client
+	 * @param message titpicamente una string
 	 */
 	sendToClient(client: IClient, message: any) {
 		if (!client || !message) return
@@ -84,6 +86,7 @@ export abstract class SocketCommunicator extends ServiceBase {
 
 	/**
 	 * Invia un MESSAGE a tutti i CLIENT della CHAT
+	 * @param message titpicamente una string
 	 */
 	sendToAll(message: any) {
 		const clients = this.getClients()

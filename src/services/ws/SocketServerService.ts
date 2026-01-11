@@ -30,8 +30,11 @@ export class SocketServerService extends SocketCommunicator {
 			jwt: <string>null,
 			/** Nome del cookie da cui estrarre il token JWT (default: "jwt") */
 			cookieName: "jwt",
+			/** i CLIENTS presenti */
 			clients: <IClient[]>[],
+			/** se implementata blocca la connessione su controllo JWT */
 			onAuth: <(jwtPayload: string) => boolean>null,
+			/** path su cui ascoltare le connessioni */
 			path: <string>null,
 		}
 	}
@@ -80,7 +83,7 @@ export class SocketServerService extends SocketCommunicator {
 		}
 		this.buildEventsServer()
 	}
- 
+
 	/**
 	 * Costruisce un SERVER-WEB-SOCKET senza bisogno di un SERVER-HTTP 
 	 */
@@ -219,6 +222,7 @@ export class SocketServerService extends SocketCommunicator {
 				jwtPayload
 			}
 			cws.binaryType = "nodebuffer"
+
 			this.wsToClient.set(cws, client)
 			this.buildEventsClient(cws)
 			this.addClient(client)
@@ -261,6 +265,10 @@ export class SocketServerService extends SocketCommunicator {
 
 	//#region ROOM
 
+	getClients(): IClient[] {
+		return this.state.clients
+	}
+
 	/**
 	 * Restituisce un CLIENT-WEB-SOCKET tramite CLIENT-JSON
 	 */
@@ -302,6 +310,20 @@ export class SocketServerService extends SocketCommunicator {
 
 
 	//#region COMMUNICATOR 
+
+	/**
+	 * Invio il message al client websocket 
+	 */
+	private sendToCWS(cws: WebSocket, message: any): boolean {
+		if (cws.readyState != WebSocket.OPEN) return false
+		try {
+			cws.send(message)
+		} catch (error) {
+			this.log("ws:sendToCWS", error, TypeLog.ERROR)
+			return false
+		}
+		return true
+	}
 
 	/**
 	 * Invia un MESSAGE al CLIENT
@@ -349,24 +371,6 @@ export class SocketServerService extends SocketCommunicator {
 	disconnectClient(client: IClient) {
 		const cws: WebSocket = this.findCWSByClient(client)
 		cws.close()
-	}
-
-	getClients(): IClient[] {
-		return this.state.clients
-	}
-
-	/**
-	 * Invio il message al client websocket 
-	 */
-	private sendToCWS(cws: WebSocket, message: any): boolean {
-		if (cws.readyState != WebSocket.OPEN) return false
-		try {
-			cws.send(message)
-		} catch (error) {
-			this.log("ws:sendToCWS", error, TypeLog.ERROR)
-			return false
-		}
-		return true
 	}
 
 	//#endregion
