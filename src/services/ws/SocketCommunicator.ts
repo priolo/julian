@@ -1,4 +1,4 @@
-import { TypeLog } from "src/core/types.js"
+import { TypeLog } from "../../core/types.js"
 import { ServiceBase } from "../../core/ServiceBase.js"
 import { IClient, SocketLog, SocketRouteActions } from "./types.js"
 
@@ -48,13 +48,13 @@ export abstract class SocketCommunicator extends ServiceBase {
 	/**
 	 * Un CLIENT si disconnette
 	 */
-	onDisconnect(client: IClient) {
+	async onDisconnect(client: IClient) {
 		if (!client || !this.children) return
 		//this.state.onDisconnect?.bind(this)(client)
 		this.log(SocketLog.CLOSE, { client })
 		for (const node of this.children) {
 			try {
-				(<SocketCommunicator>node)?.onDisconnect?.(client)
+				await (<SocketCommunicator>node)?.onDisconnect?.(client)
 			} catch (error) {
 				this.log(`Error onDisconnect in child node: ${error}`, TypeLog.ERROR)
 			}

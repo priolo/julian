@@ -41,6 +41,26 @@ export class Node implements INode {
 		return this._children.indexOf(child)
 	}
 
+	/**
+	 * Cerca un NODO a partire da un PATH
+	 * @param path path del nodo da trovare
+	 * @returns il nodo trovato o null
+	 * @example
+	 * // regolare
+	 * node.nodeByPath("/root2/child2/child2.1")
+	 * // relativo
+	 * node.nodeByPath("..")
+	 * // by id
+	 * node.nodeByPath("/root2/child2/*nodeId")
+	 * // deep
+	 * node.nodeByPath("/>child2.1")
+	 * // by state
+	 * node.nodeByPath('/>{"value":"pippo"}')
+	 * // by class
+	 * node.nodeByPath('/>~Test')
+	 * // find parent
+	 * node.nodeByPath('<child1.2')
+	 */
 	nodeByPath<T extends INode>(path: string): T | null {
 		return findNodeByPath<T>(<any>this, path)
 	}

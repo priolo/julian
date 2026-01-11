@@ -176,6 +176,27 @@ function findNodeInChildren<T extends INode>(nodes: INode[], pattern: string): T
         : <T>(nodes.find(n => fn(n)) ?? null);
 }
 
+/**
+ * Ricerca un nodo a partire da una path
+ * @param node nodo di partenza
+ * @param path path del nodo da trovare
+ * @returns il nodo trovato o null
+ * @example
+ * // regolare
+ * findNodeByPath(root, "/root2/child2/child2.1")
+ * // relativo
+ * findNodeByPath(node, "..")
+ * // by id
+ * findNodeByPath(root, "/root2/child2/*nodeId")
+ * // deep
+ * findNodeByPath(root, "/>child2.1")
+ * // by state
+ * findNodeByPath(root, '/>{"value":"pippo"}')
+ * // by class
+ * findNodeByPath(root, '/>~Test')
+ * // find parent
+ * findNodeByPath(node, '<child1.2')
+ */
 export function findNodeByPath<T extends INode>(node: T, path: string): T | null {
     if (!path || path.length === 0) return node;
 

@@ -55,9 +55,12 @@ describe("PathFinder", () => {
 	})
 
 	test("regular path", async () => {
+		// ricerca per path normale
 		const node = findNodeByPath(root, "/root2/child2/child2.1")!
 		expect(node).toBeDefined()
 		expect(node.name).toBe("child2.1")
+
+		// ricerca relativa
 		const node2 = findNodeByPath(node, "..")!
 		expect(node2?.name).toBe("child2")
 		const node3 = findNodeByPath(node2, "/root2/child1")
