@@ -238,22 +238,33 @@ export class SocketServerService extends SocketCommunicator {
 	 */
 	private buildEventsClient(cws: WebSocket) {
 
-		cws.on('message', async (message: string) => {
+		const client = this.findClientByCWS(cws)
+		client.queue ??= Promise.resolve()
+
+		cws.on('message', (message: string) => {
+
 			// const msg: string = typeof message === 'string' 
 			// 	? message 
 			// 	: Buffer.from(message).toString()
-			const client = this.findClientByCWS(cws)
-			try {
-				await this.onMessage(client, message)
-			} catch (error) {
+
+			client.queue = client.queue.then(
+				() => this.onMessage(client, message)
+			).catch((error:Error) => {
 				this.log("ws:onMessage", error, TypeLog.ERROR)
-			}
+			})
+			
+			// try {
+			// 	await this.onMessage(client, message)
+			// } catch (error) {
+			// 	this.log("ws:onMessage", error, TypeLog.ERROR)
+			// }
 		})
 
 		cws.on('error', (error) => { this.log("ws:client:error", error, TypeLog.ERROR) })
 
 		cws.on('close', (code: number, reason: string) => {
 			const client = this.findClientByCWS(cws)
+			client.queue = Promise.resolve()
 			this.removeClient(client)//this.updateClients()
 			this.onDisconnect(client)
 		})
