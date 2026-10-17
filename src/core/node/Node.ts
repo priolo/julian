@@ -12,23 +12,41 @@ export class Node implements INode {
 		this.name = name
 	}
 
+	/**
+	 * ID univoco, generato automaticamente alla creazione del nodo
+	*/
 	id: string = nodeId()
 
+	/**
+	 * Identifica il NODO all'interno della PATH. Dovrebbe essere univoco tra i nodi fratelli.
+	 */
 	name: string
 
+	/**
+	 * Riferimento al nodo genitore. Se null, il nodo è considerato ROOT-NODE.
+	 */
 	parent: INode | null = null
 
+	/**
+	 * Array di nodi figli. può essere modificato tramite addChild e removeChild.
+	 */
 	get children(): INode[] {
 		return this._children;
 	}
 	protected _children: INode[] = [];
 
+	/**
+	 * Aggiunge un nodo figlio al nodo corrente. Imposta il nodo corrente come genitore del figlio.
+	 */
 	addChild(child: INode): void {
 		if (child == null) throw new Error("ivalid parameter")
 		this._children.push(child)
 		child.parent = this
 	}
 
+	/**
+	 * Rimuove un nodo figlio dal nodo corrente. Se il nodo figlio esiste, viene rimosso dall'array dei figli e il suo riferimento al genitore viene impostato a null.
+	 */
 	removeChild(child: INode | number): void {
 		const index = typeof child != "number" ? this.indexChild(child) : child
 		if (index == -1) return;

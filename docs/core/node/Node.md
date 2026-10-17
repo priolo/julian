@@ -1,23 +1,18 @@
-## Classe Node
+## Description
 La classe Node è responsabile di mantenere la struttura ad albero.  
 Implementa l'interfaccia INode e fornisce metodi per gestire i nodi figli e la struttura gerarchica.
 
-### Importazioni
-```typescript
-import { nodeId } from "../utils.js";
-import { INode } from "./INode.js";
-```
+## File
+`/core/node/Node.ts`
 
-### Costruttore
+### Constructor
 ```typescript
-constructor(name: string = "node") {
-    this.name = name;
-}
+constructor(name: string = "node")
 ```
-Il costruttore accetta un parametro opzionale name che imposta il nome del nodo. 
+Accetta un parametro opzionale name che imposta il nome identificativo del nodo. 
 Se non viene fornito, il nome predefinito sarà "node".
 
-### Proprietà
+### Properties
 - id: string
 ```typescript
 id: string = nodeId();
@@ -77,7 +72,7 @@ indexChild(child: INode): number {
 Restituisce l'indice di un nodo figlio. Se il nodo non viene trovato, restituisce -1.
 
 
-### Esempi di Utilizzo
+### Examples
 
 Creazione di un Nodo
 ```typescript

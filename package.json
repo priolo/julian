@@ -75,6 +75,7 @@
 		"cross-env": "^7.0.3",
 		"jest": "^29.7.0",
 		"julian-test-import": "file:./src/services/farm/julian-test-import",
+		"ts-morph": "^25.0.1",
 		"ts-jest": "^29.4.5",
 		"typescript": "^5.7.2"
 	}
